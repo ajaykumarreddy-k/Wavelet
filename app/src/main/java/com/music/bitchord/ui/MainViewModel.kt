@@ -2544,6 +2544,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     ?.takeIf { !it.playlist }
                     ?.let { BrowseType.ALBUM }
                     ?: BrowseType.PLAYLIST
+            browseId.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX) -> BrowseType.PLAYLIST
             browseId.startsWith(LocalGroups.PREFIX) -> LocalGroups.typeOf(browseId) ?: fallback
             browseId.startsWith("UC") -> BrowseType.ARTIST
             browseId.startsWith("MPREb") || browseId.startsWith("VLOLAK") || browseId.startsWith("OLAK") -> BrowseType.ALBUM

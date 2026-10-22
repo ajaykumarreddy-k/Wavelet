@@ -1926,6 +1926,10 @@ private fun BitChordApp(
         }
         when {
             target.songs.isNotEmpty() -> stamp(target.songs)
+            target.browseId?.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX) == true -> {
+                val songs = com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(target.browseId)?.songs.orEmpty()
+                if (songs.isNotEmpty()) stamp(songs) else Toast.makeText(context, context.getString(R.string.no_tracks_here), Toast.LENGTH_SHORT).show()
+            }
             target.browseId == null ->
                 Toast.makeText(context, context.getString(R.string.no_tracks_here), Toast.LENGTH_SHORT).show()
             else -> viewModel.collectSongs(target.browseId, target.thumbnailUrl) { result ->
@@ -3096,6 +3100,33 @@ private fun BitChordApp(
                                         },
                                 )
                             },
+                            onMore = {
+                                val releaseSongs = (page.songs as? UiState.Success)?.data.orEmpty()
+                                val isLocalPl = page.browseId.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX)
+                                val songsForTarget = if (releaseSongs.isNotEmpty()) {
+                                    releaseSongs
+                                } else if (isLocalPl) {
+                                    com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(page.browseId)?.songs.orEmpty()
+                                } else {
+                                    emptyList()
+                                }
+                                browseActions = BrowseTarget(
+                                    browseId = page.browseId,
+                                    title = page.title,
+                                    subtitle = page.subtitle,
+                                    thumbnailUrl = page.thumbnailUrl,
+                                    type = if (isLocalPl) BrowseType.PLAYLIST else page.type,
+                                    songs = songsForTarget.sortedForDetail(songSort).map { song ->
+                                        if (page.type == BrowseType.ALBUM) {
+                                            song.copy(albumName = song.albumName ?: page.title)
+                                        } else {
+                                            song
+                                        }
+                                    },
+                                    fromCard = false,
+                                    downloadId = downloadIdFor(page.browseId),
+                                )
+                            },
                             songSort = songSort,
                             folder = folder,
                             contentPadding = listPadding,
@@ -3847,7 +3878,7 @@ private fun BitChordApp(
                                         tint = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
-                                if (isReleaseDetail && releaseSongs.isNotEmpty()) {
+                                if ((isReleaseDetail || detail.browseId.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX)) && releaseSongs.isNotEmpty()) {
                                     // The page's own tracks, in the order the page
                                     // shows them, so the sheet has them already and
                                     // Play, Shuffle and Open are the buttons beside
@@ -3858,12 +3889,13 @@ private fun BitChordApp(
                                     // them under.
                                     IconButton(
                                         onClick = {
+                                            val isLocalPl = detail.browseId.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX)
                                             browseActions = BrowseTarget(
                                                 browseId = detail.browseId,
                                                 title = detail.title,
                                                 subtitle = detail.subtitle,
                                                 thumbnailUrl = detail.thumbnailUrl,
-                                                type = detail.type,
+                                                type = if (isLocalPl) BrowseType.PLAYLIST else detail.type,
                                                 songs = releaseSongs.sortedForDetail(songSort).map { song ->
                                                     if (detail.type == BrowseType.ALBUM) {
                                                         song.copy(albumName = song.albumName ?: detail.title)
@@ -4688,12 +4720,23 @@ private fun BitChordApp(
             // Compose. Both are read from collected state so this sheet actually
             // recomposes when the answer arrives.
             val ownedPlaylists by viewModel.playlistOwned.collectAsStateWithLifecycle()
-            val playlist = target.browseId
+            val isLocalPl = target.browseId?.startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX) == true
+            val localPlaylist = if (isLocalPl) {
+                target.browseId?.let { id ->
+                    UserPlaylist(
+                        playlistId = id,
+                        title = target.title,
+                        subtitle = target.subtitle,
+                        thumbnailUrl = target.thumbnailUrl,
+                    )
+                }
+            } else null
+            val playlist = localPlaylist ?: target.browseId
                 ?.takeIf { signedIn && ownedPlaylists[it] == true }
                 ?.let { id -> playlists.firstOrNull { it.browseId == id } }
             val remote = target.browseId?.startsWith("local:") == false
             val pinnedPlaylists by AppSettings.pinnedPlaylists.collectAsStateWithLifecycle()
-            val pinnableId = target.browseId?.takeIf { target.type == BrowseType.PLAYLIST }
+            val pinnableId = target.browseId?.takeIf { target.type == BrowseType.PLAYLIST || isLocalPl }
             BrowseActionsSheet(
                 // The live answer, not the one the target was built with.
                 target = target.copy(playlist = playlist),
@@ -4745,11 +4788,11 @@ private fun BitChordApp(
                                     title = target.title,
                                     subtitle = target.subtitle,
                                     thumbnailUrl = target.thumbnailUrl,
-                                    playlist = target.type == BrowseType.PLAYLIST,
+                                    playlist = target.type == BrowseType.PLAYLIST || isLocalPl,
                                 )
                             },
                     )
-                }.takeIf { remote },
+                }.takeIf { remote || isLocalPl },
                 // The same link a share off YouTube Music's own overflow
                 // gives — built from the browse id rather than fetched,
                 // since nothing about it depends on the tracks or the
@@ -5582,7 +5625,8 @@ private fun SongSort.localizedLabel(): String = when (this) {
  */
 private fun String?.isDeviceFolder(): Boolean =
     this != null && startsWith("local:") &&
-        !startsWith(Downloads.PLAYLIST_PREFIX) && !startsWith(LocalGroups.PREFIX)
+        !startsWith(Downloads.PLAYLIST_PREFIX) && !startsWith(LocalGroups.PREFIX) &&
+        !startsWith(com.music.bitchord.data.spotify.LocalPlaylistStore.LOCAL_PREFIX)
 
 /**
  * Whether [videoId] is the track playing, and is known to be playing YouTube's

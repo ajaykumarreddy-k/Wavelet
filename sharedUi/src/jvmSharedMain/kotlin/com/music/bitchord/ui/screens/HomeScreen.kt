@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
@@ -1052,8 +1053,21 @@ internal fun ShelfCard(
                 color = if (isCurrent) PlayingAccent else MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
+                modifier = Modifier.weight(1f),
             )
+            if (onLongPress != null) {
+                IconButton(
+                    onClick = onLongPress,
+                    modifier = Modifier.size(24.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.MoreVert,
+                        contentDescription = stringResource(Res.string.more),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
         }
         val displaySubtitle = localizeCardSubtitle(item.subtitle)
         Text(

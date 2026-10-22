@@ -324,6 +324,7 @@ fun DetailScreen(
     /** Null where saving isn't offered — a guest. */
     onToggleReleaseLibrary: ((String) -> Unit)? = null,
     onDownloadAll: ((List<Song>) -> Unit)? = null,
+    onMore: (() -> Unit)? = null,
     /**
      * How the track list is ordered — the release's own running order by
      * default, or alphabetical. Owned by the caller rather than this page
@@ -561,6 +562,7 @@ fun DetailScreen(
                         onArtistClick = onArtistClick.takeIf { folder == null },
                         onToggleLibrary = onToggleLibrary,
                         onDownloadAll = onDownloadAll?.let { cb -> { cb(songs) } },
+                        onMore = onMore,
                     )
                 }
             }
@@ -883,6 +885,7 @@ private fun ReleaseHeader(
     onArtistClick: ((String, String) -> Unit)?,
     onToggleLibrary: (() -> Unit)?,
     onDownloadAll: (() -> Unit)? = null,
+    onMore: (() -> Unit)? = null,
 ) {
     val (credit, meta) = page.headerLines(songs.size, songs.playtime())
     // Every row on a release carries the same credit — see [pageCredit] — so
@@ -998,11 +1001,9 @@ private fun ReleaseHeader(
                 horizontalArrangement = Arrangement.spacedBy(RELEASE_ACTION_GAP),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (page.browseId.startsWith("local:")) {
-                    // Already on this device — a folder, a download, a local
-                    // playlist — so there is no library to add it to, and a
-                    // greyed-out plus would only promise one. Apple Music's
-                    // own pair for that case: Play and Shuffle, side by side.
+                if (page.browseId.startsWith("local:") && !page.browseId.startsWith("local:playlist:")) {
+                    // Already on this device — a folder, a download — so there is no library to add it to,
+                    // and a greyed-out plus would only promise one. Play and Shuffle, side by side.
                     ActionPill(
                         icon = BitChordIcons.Play,
                         label = stringResource(R.string.play),
@@ -1019,6 +1020,15 @@ private fun ReleaseHeader(
                         size = RELEASE_SIDE_BUTTON,
                         modifier = Modifier.weight(1f),
                     )
+                    if (onMore != null) {
+                        CircleIconButton(
+                            icon = Icons.Rounded.MoreVert,
+                            contentDescription = stringResource(R.string.more),
+                            onClick = onMore,
+                            haptic = Haptic.Resume,
+                            size = RELEASE_SIDE_BUTTON,
+                        )
+                    }
                     return@Row
                 }
                 CircleIconButton(
@@ -1059,7 +1069,7 @@ private fun ReleaseHeader(
                         haptic = if (library.saved) Haptic.ToggleOff else Haptic.ToggleOn,
                         size = RELEASE_SIDE_BUTTON,
                     )
-                } else {
+                } else if (!page.browseId.startsWith("local:")) {
                     // Shown but greyed out for a guest, rather than leaving a
                     // hole beside Play.
                     CircleIconButton(
@@ -1068,6 +1078,15 @@ private fun ReleaseHeader(
                         onClick = {},
                         size = RELEASE_SIDE_BUTTON,
                         enabled = false,
+                    )
+                }
+                if (onMore != null) {
+                    CircleIconButton(
+                        icon = Icons.Rounded.MoreVert,
+                        contentDescription = stringResource(R.string.more),
+                        onClick = onMore,
+                        haptic = Haptic.Resume,
+                        size = RELEASE_SIDE_BUTTON,
                     )
                 }
             }

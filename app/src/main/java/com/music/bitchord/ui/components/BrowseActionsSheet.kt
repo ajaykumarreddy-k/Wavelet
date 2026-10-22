@@ -212,8 +212,49 @@ fun BrowseActionsSheet(
                 HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outline)
             }
 
-            onPlay?.let { ActionRow(Icons.Rounded.PlayArrow, stringResource(R.string.play), onClick = it) }
-            onShuffle?.let { ActionRow(BitChordIcons.Shuffle, stringResource(R.string.shuffle), onClick = it) }
+            val isPlaylistTarget = target.type == BrowseType.PLAYLIST ||
+                target.browseId?.startsWith("local:playlist:") == true ||
+                target.browseId?.startsWith("VL") == true ||
+                target.browseId?.startsWith("PL") == true
+
+            @Composable
+            fun RenderDownloadRow() {
+                onDownloadAll?.let { download ->
+                    val active by Downloads.active.collectAsStateWithLifecycle()
+                    val requested by Downloads.requested.collectAsStateWithLifecycle()
+                    val saved by Downloads.saved.collectAsStateWithLifecycle()
+                    val waiting = target.browseId?.let { requested[it] }.orEmpty().any { id ->
+                        when (active[id]) {
+                            is DownloadState.Queued, is DownloadState.Running -> true
+                            else -> false
+                        }
+                    }
+                    val ids = remember(target.songs) { target.songs.mapTo(HashSet()) { it.videoId } }
+                    val downloaded = !waiting && ids.isNotEmpty() && ids.all { it in saved }
+                    ActionRow(
+                        icon = when {
+                            waiting -> BitChordIcons.Clock
+                            downloaded -> BitChordIcons.Check
+                            else -> BitChordIcons.Download
+                        },
+                        label = if (isPlaylistTarget) {
+                            "Download entire playlist"
+                        } else {
+                            stringResource(R.string.download_all)
+                        },
+                        value = when {
+                            waiting -> stringResource(R.string.downloading)
+                            downloaded -> stringResource(R.string.downloaded)
+                            else -> null
+                        },
+                        onClick = download,
+                    )
+                }
+            }
+
+            if (isPlaylistTarget) {
+                RenderDownloadRow()
+            }
             ActionRow(
                 Icons.AutoMirrored.Rounded.PlaylistPlay,
                 stringResource(R.string.play_next),
@@ -224,47 +265,18 @@ fun BrowseActionsSheet(
                 stringResource(R.string.add_to_queue),
                 onClick = onAddToQueue,
             )
-            onDownloadAll?.let { download ->
-                // Saying which of the three it is, rather than offering the same row
-                // whatever the state — this is where a release is asked for now that
-                // its page's header spends that spot on the search, and a menu that
-                // can't say "already on the device" leaves the question open. The
-                // tap is left live in every state: [Downloads.enqueue] leaves a
-                // track that is saved, queued or running alone.
-                val active by Downloads.active.collectAsStateWithLifecycle()
-                val requested by Downloads.requested.collectAsStateWithLifecycle()
-                val saved by Downloads.saved.collectAsStateWithLifecycle()
-                // Only the tracks *this release* asked for — two releases can share
-                // a track, and reading the whole queue would show this release
-                // waiting on a download some other one started. Failed entries stay
-                // in [Downloads.active] until dismissed, and a failure is not a wait.
-                val waiting = target.browseId?.let { requested[it] }.orEmpty().any { id ->
-                    when (active[id]) {
-                        is DownloadState.Queued, is DownloadState.Running -> true
-                        else -> false
-                    }
-                }
-                // The same reading [DownloadedBadge] does per row: a release counts
-                // as downloaded once every one of its tracks is in the saved set,
-                // not from any record of the release itself. Empty for a card whose
-                // page was never opened, which is not an answer either way.
-                val ids = remember(target.songs) { target.songs.mapTo(HashSet()) { it.videoId } }
-                val downloaded = !waiting && ids.isNotEmpty() && ids.all { it in saved }
+            onTogglePin?.let {
                 ActionRow(
-                    icon = when {
-                        waiting -> BitChordIcons.Clock
-                        downloaded -> BitChordIcons.Check
-                        else -> BitChordIcons.Download
-                    },
-                    label = stringResource(R.string.download_all),
-                    value = when {
-                        waiting -> stringResource(R.string.downloading)
-                        downloaded -> stringResource(R.string.downloaded)
-                        else -> null
-                    },
-                    onClick = download,
+                    BitChordIcons.Pin,
+                    stringResource(if (isPinned) R.string.unpin else R.string.pin),
+                    onClick = it,
                 )
             }
+            if (!isPlaylistTarget) {
+                RenderDownloadRow()
+            }
+            onPlay?.let { ActionRow(Icons.Rounded.PlayArrow, stringResource(R.string.play), onClick = it) }
+            onShuffle?.let { ActionRow(BitChordIcons.Shuffle, stringResource(R.string.shuffle), onClick = it) }
             onOpen?.let {
                 ActionRow(
                     BitChordIcons.ChevronRight,
@@ -274,13 +286,6 @@ fun BrowseActionsSheet(
             }
             onShare?.let {
                 ActionRow(Icons.Rounded.Share, stringResource(R.string.share), onClick = it)
-            }
-            onTogglePin?.let {
-                ActionRow(
-                    BitChordIcons.Pin,
-                    stringResource(if (isPinned) R.string.unpin else R.string.pin),
-                    onClick = it,
-                )
             }
             if (onRename != null) {
                 ActionRow(Icons.Rounded.Edit, stringResource(R.string.rename)) {

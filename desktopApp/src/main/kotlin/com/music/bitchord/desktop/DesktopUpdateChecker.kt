@@ -33,7 +33,7 @@ internal object DesktopUpdateChecker {
     )
 
     private const val LATEST_RELEASE_URL =
-        "https://api.github.com/repos/kushagrasinghx/BitChord/releases/latest"
+        "https://api.github.com/repos/ajaykumarreddy-k/Wavelet/releases/latest"
 
     val currentVersion: String = System.getProperty("bitchord.version") ?: "1.8-beta1"
 
@@ -46,17 +46,34 @@ internal object DesktopUpdateChecker {
         }
     }
 
-    suspend fun check(): UpdateInfo? = null
+    suspend fun check(): UpdateInfo? = runCatching {
+        val response = http.get(LATEST_RELEASE_URL) {
+            header("Accept", "application/vnd.github+json")
+            header("User-Agent", "Wavelet-Desktop")
+        }
+        if (!response.status.isSuccess()) return null
+        val release = json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val tag = release["tag_name"]?.jsonPrimitive?.contentOrNull ?: return null
+        val remoteVersion = tag.removePrefix("v").removePrefix("V")
+        if (!isNewer(remoteVersion, currentVersion)) return null
+        UpdateInfo(
+            version = remoteVersion,
+            releaseUrl = release["html_url"]?.jsonPrimitive?.contentOrNull
+                ?: "https://github.com/ajaykumarreddy-k/Wavelet/releases/latest",
+            downloadUrl = installerUrl(release),
+            notes = release["body"]?.jsonPrimitive?.contentOrNull,
+        )
+    }.getOrNull()
 
     /**
-     * The release names its files `BitChord-<version>-windows-x64-setup.exe` and
-     * `BitChord-<version>-linux-x86_64.AppImage` (see .github/workflows/release.yml); match on the
+     * The release names its files `Wavelet-<version>-windows-x64-setup.exe` and
+     * `Wavelet-<version>-linux-x86_64.AppImage` (see .github/workflows/release.yml); match on the
      * platform part so a version change does not matter.
      */
     private fun installerUrl(release: JsonObject): String? {
         val suffixes = when {
-            DesktopPlatform.isWindows -> listOf("-windows-x64-setup.exe")
-            DesktopPlatform.isLinux -> listOf(".AppImage", "-linux-amd64.deb")
+            DesktopPlatform.isWindows -> listOf("-windows-x64-setup.exe", ".exe")
+            DesktopPlatform.isLinux -> listOf(".AppImage", "-linux-amd64.deb", ".deb")
             else -> return null
         }
         val assets = release["assets"]?.jsonArray?.mapNotNull { it as? JsonObject }.orEmpty()

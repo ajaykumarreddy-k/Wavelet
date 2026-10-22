@@ -42,7 +42,8 @@ object AppUpdateChecker {
 
     private const val CACHE_SUBDIR = "updates"
 
-    private const val LATEST_RELEASE_URL = ""
+    private const val LATEST_RELEASE_URL =
+        "https://api.github.com/repos/ajaykumarreddy-k/Wavelet/releases/latest"
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -65,7 +66,29 @@ object AppUpdateChecker {
     private var downloadCancelled = false
 
     suspend fun check() = withContext(Dispatchers.IO) {
-        // Disabled: do not fetch updates from upstream repository
+        val request = Request.Builder()
+            .url(LATEST_RELEASE_URL)
+            .header("Accept", "application/vnd.github+json")
+            .header("User-Agent", "Wavelet-Android")
+            .build()
+        runCatching {
+            Http.client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return@use
+                val body = response.body?.string() ?: return@use
+                val release = json.parseToJsonElement(body) as? JsonObject ?: return@use
+                val tag = release["tag_name"]?.jsonPrimitive?.contentOrNull ?: return@use
+                val remoteVersion = tag.removePrefix("v").removePrefix("V")
+                if (isNewer(remoteVersion, BuildConfig.VERSION_NAME)) {
+                    _available.value = UpdateInfo(
+                        version = remoteVersion,
+                        releaseUrl = release["html_url"]?.jsonPrimitive?.contentOrNull
+                            ?: "https://github.com/ajaykumarreddy-k/Wavelet/releases/latest",
+                        apkUrl = apkAssetUrl(release),
+                        notes = release["body"]?.jsonPrimitive?.contentOrNull,
+                    )
+                }
+            }
+        }
     }
 
     /**
@@ -82,11 +105,11 @@ object AppUpdateChecker {
      * One release carries the phone app and the TV app, each as a universal
      * APK plus per-ABI splits:
      *
-     *     BitChord-v1.8.apk     BitChord-v1.8_arm64-v8a.apk     ...
-     *     BitChordTV-v1.8.apk   BitChordTV-v1.8_arm64-v8a.apk   ...
+     *     Wavelet-v1.8.apk     Wavelet-v1.8_arm64-v8a.apk     ...
+     *     WaveletTV-v1.8.apk   WaveletTV-v1.8_arm64-v8a.apk   ...
      *
      * so this app's APKs are the ones named with its own
-     * [BuildConfig.UPDATE_APK_PREFIX] — "BitChord-" never matches a TV file,
+     * [BuildConfig.UPDATE_APK_PREFIX] — "Wavelet-" never matches a TV file,
      * since the prefix ends at the hyphen. The universal build (no `_ABI`
      * suffix) is taken first, as it installs anywhere; failing that, the split
      * for this device's ABI. A release with neither leaves
@@ -99,7 +122,10 @@ object AppUpdateChecker {
             ?.mapNotNull { asset ->
                 val name = asset["name"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
                 val url = asset["browser_download_url"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
-                val ours = name.startsWith(BuildConfig.UPDATE_APK_PREFIX, ignoreCase = true) &&
+                val ours = (name.startsWith(BuildConfig.UPDATE_APK_PREFIX, ignoreCase = true) ||
+                    name.startsWith("Wavelet", ignoreCase = true) ||
+                    name.startsWith("app-prod", ignoreCase = true) ||
+                    name.startsWith("app-", ignoreCase = true)) &&
                     name.endsWith(".apk", ignoreCase = true) &&
                     asset["state"]?.jsonPrimitive?.contentOrNull == "uploaded"
                 if (ours) name.removeSuffix(".apk").removeSuffix(".APK") to url else null

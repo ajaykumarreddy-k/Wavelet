@@ -3,13 +3,16 @@
 <br/>
 <br/>
 
-<img src="Logo.png" alt="BitChord app icon" width="200" />
+<img src="Logo.png" alt="Wavelet app icon" width="200" />
 
 # Wavelet
 
 ### Aesthetic YouTube Music Client · Custom-Fit Edition
 
-[**Download & Build**](#download--build) · [**Features**](#features) · [**About Fork**](#about-this-fork) · [**Contributing**](#contributing) · [**Disclaimer**](#disclaimer)
+[![Release](https://img.shields.io/github/v/release/ajaykumarreddy-k/Wavelet?color=blue&label=Latest%20Release)](https://github.com/ajaykumarreddy-k/Wavelet/releases)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
+[**Downloads & Releases**](#download--releases) · [**Features**](#features) · [**About Fork**](#about-this-fork) · [**Contributing**](#contributing) · [**Disclaimer**](#disclaimer)
 
 </div>
 
@@ -30,8 +33,6 @@
 ---
 
 <div align="center">
-
-<img src="Banner.png" alt="BitChord banner" width="100%" />
 
 <h1><a id="features"></a>Features</h1>
 
@@ -82,13 +83,37 @@
 
 <div align="center">
 
-<h1><a id="download--build"></a>Download & Build</h1>
+<h1><a id="download--releases"></a>Downloads & Releases</h1>
+
+<p>Get the latest pre-built APK packages directly from GitHub Releases:</p>
+
+[**🚀 Download Wavelet v1.8.1 (Latest Release)**](https://github.com/ajaykumarreddy-k/Wavelet/releases/tag/v1.8.1)
+
+</div>
+
+### 📦 Available Packages
+
+| Package | Description | Target |
+| :--- | :--- | :--- |
+| **[`Wavelet-v1.8.1_arm64-v8a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.8.1/Wavelet-v1.8.1_arm64-v8a.apk)** | High-performance optimized build (ARM 64-bit) | Most modern Android phones & tablets (Recommended) |
+| **[`Wavelet-v1.8.1_armeabi-v7a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.8.1/Wavelet-v1.8.1_armeabi-v7a.apk)** | 32-bit legacy ARM build | Older Android devices |
+| **[`Wavelet-v1.8.1-universal-debug.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.8.1/Wavelet-v1.8.1-universal-debug.apk)** | Universal multi-architecture build | Any Android device / Emulators |
+| **[`WaveletWear-v1.8.1.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.8.1/WaveletWear-v1.8.1.apk)** | Wear OS companion app | Wear OS Smartwatches |
+
+> [!TIP]
+> **Which one should I install?** If you are using a modern smartphone, download **`Wavelet-v1.8.1_arm64-v8a.apk`**. Future releases can be automatically downloaded and installed right from inside the app!
+
+---
+
+<div align="center">
+
+<h1><a id="download--build"></a>Building from Source</h1>
 
 </div>
 
 ### Building & Running
 
-This is a personal custom-fit build. You can build and run the app directly:
+You can also build and run the app directly from source:
 
 #### Android
 ```bash

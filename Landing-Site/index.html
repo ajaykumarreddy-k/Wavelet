@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wavelet — Your Music. Your Flow.</title>
+  <meta name="description" content="A personal music player made for the way you listen. YouTube Music discovery, local libraries, fluid synchronized lyrics, and seamless crossfade under an open sky.">
+  <link rel="icon" type="image/svg+xml" href="appicon/wavelet-favicon.svg">
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Atmospheric Sky Background Layer -->
+  <div class="sky-backdrop" aria-hidden="true"></div>
+  <div class="sky-soft-glow" aria-hidden="true"></div>
+
+  <!-- Persistent Minimal Navigation -->
+  <header class="site-header" id="site-header">
+    <div class="nav-container">
+      <a href="#" class="brand-link" aria-label="Wavelet Home">
+        <img src="appicon/wavelet-logo-mark-red.svg" alt="Wavelet Emblem" class="brand-mark" width="28" height="28">
+        <span class="brand-title">wavelet</span>
+        <span class="brand-tag">custom-fit</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#philosophy" class="nav-item">Philosophy</a>
+        <a href="#charms" class="nav-item">Charms</a>
+        <a href="#capabilities" class="nav-item">Experience</a>
+        <a href="#downloads" class="nav-item">Releases</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://github.com/ajaykumarreddy-k/Wavelet" target="_blank" rel="noopener noreferrer" class="nav-icon-link" aria-label="GitHub Repository" title="GitHub Repository">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </a>
+        <a href="#downloads" class="btn-primary-pill">
+          <span>Download App</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <!-- Editorial Corner Microcopy (Melike Turgut Portfolio Philosophy) -->
+      <div class="editorial-corner corner-top-left">
+        <span class="meta-label">WAVELET</span>
+        <span class="meta-sub">YOUR MUSIC. YOUR FLOW.</span>
+      </div>
+
+      <div class="editorial-corner corner-top-right">
+        <span class="meta-label">PERSONAL MUSIC PLAYER</span>
+        <span class="meta-sub">MADE FOR THE WAY YOU LISTEN.</span>
+      </div>
+
+      <div class="editorial-corner corner-bottom-left">
+        <p class="editorial-quote">
+          “Every sound has a place.<br>
+          Your music, your playlists, your rhythm.<br>
+          All flowing together in Wavelet.”
+        </p>
+      </div>
+
+      <div class="editorial-corner corner-bottom-right">
+        <div class="editorial-nav-pills">
+          <a href="#capabilities">DISCOVER</a>
+          <span class="dot-sep">·</span>
+          <a href="#features">FEATURES</a>
+          <span class="dot-sep">·</span>
+          <a href="https://github.com/ajaykumarreddy-k/Wavelet" target="_blank" rel="noopener">GITHUB</a>
+        </div>
+      </div>
+
+      <!-- CENTER HERO COMPOSITION -->
+      <div class="hero-canvas">
+        <div class="sound-aura" aria-hidden="true"></div>
+
+        <!-- The Central Oversized Typographic Sculpture -->
+        <div class="wordmark-stage" id="wordmarkStage">
+          <!-- Ambient 3D floating charms clustered around typography -->
+          <div class="charm charm-ribbon" data-charm="ribbon" data-title="Fluid Soundwave" data-desc="Real-time audio visualizer & synchronized lyric motion flowing with pure fluidity.">
+            <img src="assets/3d/charm_liquid_wave.png" alt="Liquid 3D wave ribbon" class="charm-img" loading="eager">
+          </div>
+
+          <div class="charm charm-sphere" data-charm="sphere" data-title="Lossless Sphere" data-desc="Hi-Res audio clarity with FLAC/ALAC lossless sound streams and YouTube fallback.">
+            <img src="assets/3d/charm_audio_sphere.png" alt="Iridescent glass audio sphere" class="charm-img" loading="eager">
+          </div>
+
+          <div class="charm charm-gem" data-charm="gem" data-title="Wavelet Red Gem" data-desc="The iconic Wavelet brand mark, sculpted in liquid glass & ruby reflections.">
+            <img src="assets/3d/charm_wavelet_gem.png" alt="Glossy 3D red Wavelet gem" class="charm-img" loading="eager">
+          </div>
+
+          <div class="charm charm-pill" data-charm="pill" data-title="Harmonic Capsule" data-desc="Seamless crossfade from 0–12s and DJ-grade Automix beat matching.">
+            <img src="assets/3d/charm_jelly_pill.png" alt="Glossy jelly audio capsule" class="charm-img" loading="eager">
+          </div>
+
+          <div class="charm charm-torus" data-charm="torus" data-title="Spectrum Disc" data-desc="A seamless bridge uniting YouTube Music discovery with your offline local files.">
+            <img src="assets/3d/charm_vinyl_torus.png" alt="Holographic glass vinyl torus" class="charm-img" loading="eager">
+          </div>
+
+          <div class="charm charm-play" data-charm="play" data-title="Instant Import" data-desc="Paste any playlist URL; playback starts instantly while caching runs in the background.">
+            <img src="assets/3d/charm_red_play.png" alt="Glossy red play triangle charm" class="charm-img" loading="eager">
+          </div>
+
+          <!-- The Typography: Oversized Lowercase "wavelet" -->
+          <h1 class="hero-wordmark" aria-label="Wavelet">
+            <span class="char char-w">w</span>
+            <span class="char char-a">a</span>
+            <span class="char char-v">v</span>
+            <span class="char char-e">e</span>
+            <span class="char char-l">l</span>
+            <span class="char char-e2">e</span>
+            <span class="char char-t">t</span>
+          </h1>
+        </div>
+
+        <!-- Subtitle & Quick Action -->
+        <div class="hero-caption">
+          <p class="hero-tagline">
+            An aesthetic, custom-fit music client built for pure listening pleasure.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#downloads" class="cta-primary">
+              <span class="cta-sparkle">✦</span>
+              <span>Explore Releases</span>
+            </a>
+            <a href="#downloads" class="cta-secondary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+              </svg>
+              <span>Download now</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Charm Detail Drawer / Floating Editorial Card -->
+        <aside class="charm-modal" id="charmModal" aria-hidden="true" role="dialog" aria-labelledby="charmModalTitle">
+          <div class="charm-modal-glass">
+            <button class="charm-modal-close" id="charmModalClose" aria-label="Close detail modal">&times;</button>
+            <div class="charm-modal-icon" id="charmModalIcon">
+              <img src="assets/3d/charm_wavelet_gem.png" alt="Active Charm" id="charmModalImg">
+            </div>
+            <div class="charm-modal-body">
+              <span class="charm-modal-kicker">Interactive 3D Charm</span>
+              <h3 class="charm-modal-title" id="charmModalTitle">Wavelet Gem</h3>
+              <p class="charm-modal-desc" id="charmModalDesc">
+                The recognizable signature motif sculpted in liquid ruby glass.
+              </p>
+              <div class="charm-modal-meta">
+                <span class="badge-feature">Tap any charm to inspect</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+
+    </section>
+
+    <!-- SECTION 2: PHILOSOPHY & EDITORIAL STATEMENT -->
+    <section class="section-editorial" id="philosophy">
+      <div class="container">
+        <div class="editorial-manifesto">
+          <div class="section-tag-wrapper">
+            <span class="editorial-pill">01 / The Ethos</span>
+          </div>
+          <h2 class="editorial-heading">
+            Not just another player.<br>
+            A tailored <em class="serif-italic">sanctuary</em> for sound.
+          </h2>
+          <p class="editorial-lead">
+            Wavelet was born out of a desire for simplicity, beauty, and autonomy. 
+            A personal music experience crafted for those who value album art as much as lossless frequencies, 
+            who want the endless catalog of YouTube Music without commercial clutter, and who cherish local files 
+            curated over a lifetime.
+          </p>
+        </div>
+
+        <!-- 3-Column Editorial Grid -->
+        <div class="manifesto-grid">
+          <article class="manifesto-card">
+            <div class="card-num">01</div>
+            <h3 class="card-title">Fluid Discovery</h3>
+            <p class="card-desc">
+              Browse, search, and stream millions of tracks with YouTube Music innertube integration. Hi-Res FLAC/ALAC audio streaming with smart fallback.
+            </p>
+          </article>
+
+          <article class="manifesto-card">
+            <div class="card-num">02</div>
+            <h3 class="card-title">Instant Lazy Import</h3>
+            <p class="card-desc">
+              Paste any public or unlisted playlist. Your queue begins playing instantly while background workers lazily import metadata, album art, and tracks.
+            </p>
+          </article>
+
+          <article class="manifesto-card">
+            <div class="card-num">03</div>
+            <h3 class="card-title">Living Artwork</h3>
+            <p class="card-desc">
+              Dynamic mesh backdrops extract warm, vibrant palettes straight from album canvases. Watch the UI gently shift hues as each track evolves.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: 3D CHARMS INTERACTION SHOWCASE -->
+    <section class="section-charms" id="charms">
+      <div class="container">
+        <div class="section-header-center">
+          <span class="editorial-pill">02 / The Tactile Charms</span>
+          <h2 class="section-title">The anatomy of Wavelet.</h2>
+          <p class="section-subtitle">
+            Hover, tilt, and explore the 6 visual totems representing the core engineering principles of the player.
+          </p>
+        </div>
+
+        <div class="charms-grid">
+          <div class="charm-feature-card" data-charm-target="gem">
+            <div class="card-visual">
+              <img src="assets/3d/charm_wavelet_gem.png" alt="Wavelet Gem" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Identity</span>
+              <h4>The Wavelet Mark</h4>
+              <p>Recognizable ruby-red branding, honoring the soul of music notation and natural ripples.</p>
+            </div>
+          </div>
+
+          <div class="charm-feature-card" data-charm-target="sphere">
+            <div class="card-visual">
+              <img src="assets/3d/charm_audio_sphere.png" alt="Audio Sphere" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Acoustics</span>
+              <h4>Pure Lossless Audio</h4>
+              <p>Studio-quality bitstreams, custom EQ integration, and granular bit-depth inspection.</p>
+            </div>
+          </div>
+
+          <div class="charm-feature-card" data-charm-target="pill">
+            <div class="card-visual">
+              <img src="assets/3d/charm_jelly_pill.png" alt="Harmonic Capsule" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Transitions</span>
+              <h4>Automix & Crossfade</h4>
+              <p>Continuous gapless playback with 0–12 second true crossfade curves and beat-matching.</p>
+            </div>
+          </div>
+
+          <div class="charm-feature-card" data-charm-target="ribbon">
+            <div class="card-visual">
+              <img src="assets/3d/charm_liquid_wave.png" alt="Fluid Soundwave" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Poetry</span>
+              <h4>Synced Syllables</h4>
+              <p>Apple-style fluid lyric motion with multi-provider fallbacks: LRCLIB, Genius, Musixmatch & KuGou.</p>
+            </div>
+          </div>
+
+          <div class="charm-feature-card" data-charm-target="torus">
+            <div class="card-visual">
+              <img src="assets/3d/charm_vinyl_torus.png" alt="Spectrum Disc" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Library</span>
+              <h4>Hybrid Catalog</h4>
+              <p>Unify local music folders with cloud streams. Offline downloads with rich embedded ID3 tags.</p>
+            </div>
+          </div>
+
+          <div class="charm-feature-card" data-charm-target="play">
+            <div class="card-visual">
+              <img src="assets/3d/charm_red_play.png" alt="Instant Import" class="feature-charm-img">
+            </div>
+            <div class="card-content">
+              <span class="mini-tag">Flow</span>
+              <h4>Lazy Background Sync</h4>
+              <p>No waiting for 500-track playlists to parse. Start playing on tap while the rest populates quietly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: CAPABILITIES EXHIBITION -->
+    <section class="section-capabilities" id="capabilities">
+      <div class="container">
+        <div class="capabilities-split">
+          <div class="capabilities-intro">
+            <span class="editorial-pill">03 / Capabilities</span>
+            <h2 class="capabilities-title">
+              Crafted with restraint.<br>
+              Engineered with <span class="serif-italic">power</span>.
+            </h2>
+            <p class="capabilities-description">
+              Every detail in Wavelet is tuned to stay out of your way. No push notifications, no subscription paywalls, no bloated social feeds. Just pure music flowing from your headphones to your mind.
+            </p>
+            
+            <ul class="feature-checklist">
+              <li>
+                <span class="check-bullet">✦</span>
+                <div>
+                  <strong>Apple-Inspired Lyrics Presentation:</strong>
+                  Fluid, kinetic typography highlighting line-by-line and word-by-word.
+                </div>
+              </li>
+              <li>
+                <span class="check-bullet">✦</span>
+                <div>
+                  <strong>Discord Rich Presence & Scrobbling:</strong>
+                  Real-time activity broadcasts on Discord, Last.fm, and ListenBrainz.
+                </div>
+              </li>
+              <li>
+                <span class="check-bullet">✦</span>
+                <div>
+                  <strong>Stats For Nerds & Codec Inspector:</strong>
+                  Direct inspection of bit depth, sample rate, buffer health, and audio engine status.
+                </div>
+              </li>
+              <li>
+                <span class="check-bullet">✦</span>
+                <div>
+                  <strong>Automix DJ Transitions:</strong>
+                  Smart tempo-stretching and silence trimming for non-stop dance/workout flow.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="capabilities-preview-panel">
+            <div class="glass-device-mockup">
+              <div class="mockup-header">
+                <div class="mockup-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <span class="mockup-pill-label">Now Playing · Studio Deck</span>
+                <span class="mockup-badge">Hi-Res FLAC</span>
+              </div>
+              <div class="mockup-artwork-box">
+                <div class="mockup-vinyl-spin">
+                  <img src="assets/3d/charm_vinyl_torus.png" alt="Now Playing Vinyl" class="spin-disc">
+                </div>
+                <div class="mockup-track-info">
+                  <span class="track-kicker">NOW STREAMING</span>
+                  <h4 class="track-title">Midnight Horizons</h4>
+                  <p class="track-artist">Wavelet Acoustic Lab · Ambient Session</p>
+                </div>
+              </div>
+              
+              <!-- Synchronized lyrics mock -->
+              <div class="mockup-lyrics">
+                <p class="lyric-line passed">Clouds drift soft across the summer sky</p>
+                <p class="lyric-line active">Every frequency falling into place ✦</p>
+                <p class="lyric-line upcoming">All your memories held inside the sound</p>
+              </div>
+
+              <!-- Audio waveform scrubber -->
+              <div class="mockup-scrubber-wrapper">
+                <div class="mockup-waveform">
+                  <span style="height: 35%"></span><span style="height: 65%"></span><span style="height: 90%"></span>
+                  <span style="height: 75%"></span><span style="height: 40%"></span><span style="height: 85%"></span>
+                  <span style="height: 100%"></span><span style="height: 60%"></span><span style="height: 45%"></span>
+                  <span style="height: 80%"></span><span style="height: 70%"></span><span style="height: 95%"></span>
+                  <span style="height: 50%"></span><span style="height: 30%"></span><span style="height: 80%"></span>
+                </div>
+                <div class="mockup-times">
+                  <span>02:14</span>
+                  <span>04:48</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: CROSS-PLATFORM & RELEASES -->
+    <section class="section-downloads" id="downloads">
+      <div class="container">
+        <div class="section-header-center">
+          <span class="editorial-pill">04 / Ecosystem</span>
+          <h2 class="section-title">Built for every screen.</h2>
+          <p class="section-subtitle">
+            Wavelet runs natively across your devices with Compose Multiplatform, Kotlin, and modern web architectures.
+          </p>
+        </div>
+
+        <div class="downloads-grid">
+          <!-- Android Card -->
+          <div class="download-card highlight-card">
+            <div class="platform-badge">Android</div>
+            <div class="card-icon-area">
+              <img src="appicon/wavelet-icon-256.png" alt="Android Icon" class="platform-icon">
+            </div>
+            <h3>Mobile & Tablet</h3>
+            <p>Foreground media session, offline downloads, lock-screen controls, and system equalizer.</p>
+            <div class="card-meta-list">
+              <span>APK · Android 8.0+</span>
+              <span>·</span>
+              <span>Direct Release</span>
+            </div>
+            <a href="https://github.com/ajaykumarreddy-k/Wavelet/releases" target="_blank" rel="noopener noreferrer" class="btn-card-action">
+              <span>Get Android APK</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Desktop Card -->
+          <div class="download-card">
+            <div class="platform-badge">Desktop</div>
+            <div class="card-icon-area">
+              <img src="appicon/wavelet-app-icon.ico" alt="Desktop Icon" class="platform-icon">
+            </div>
+            <h3>macOS · Windows · Linux</h3>
+            <p>Compose Multiplatform desktop client with global hotkeys, high-res canvas, and tray controls.</p>
+            <div class="card-meta-list">
+              <span>macOS (.dmg)</span>
+              <span>·</span>
+              <span>Windows (.exe)</span>
+            </div>
+            <a href="https://github.com/ajaykumarreddy-k/Wavelet/releases" target="_blank" rel="noopener noreferrer" class="btn-card-action secondary">
+              <span>View Builds</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- TV & WearOS Card -->
+          <div class="download-card">
+            <div class="platform-badge">Connected</div>
+            <div class="card-icon-area">
+              <img src="appicon/wavelet-mark-red-512.png" alt="Connected Icon" class="platform-icon">
+            </div>
+            <h3>Android TV & Wear OS</h3>
+            <p>Leanback television interface with high-contrast UI and wrist-based remote controls.</p>
+            <div class="card-meta-list">
+              <span>Leanback TV</span>
+              <span>·</span>
+              <span>Wear OS Tile</span>
+            </div>
+            <a href="https://github.com/ajaykumarreddy-k/Wavelet" target="_blank" rel="noopener noreferrer" class="btn-card-action secondary">
+              <span>Explore Repo</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Web Player Card -->
+          <div class="download-card">
+            <div class="platform-badge">Browser</div>
+            <div class="card-icon-area">
+              <img src="appicon/wavelet-logo.svg" alt="Web Player" class="platform-icon">
+            </div>
+            <h3>Wavelet Web Client</h3>
+            <p>Zero install browser player with companion extension for full YouTube Music stream decoding.</p>
+            <div class="card-meta-list">
+              <span>React 19</span>
+              <span>·</span>
+              <span>Browser Extension</span>
+            </div>
+            <a href="https://github.com/ajaykumarreddy-k/Wavelet/tree/main/web" target="_blank" rel="noopener noreferrer" class="btn-card-action secondary">
+              <span>Launch Client</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- EDITORIAL FOOTER & ARTISTIC CHECKERED CANVAS -->
+  <footer class="site-footer" id="footer">
+    <!-- Preserved Project Info & Credits (Upper Tier) -->
+    <div class="container footer-project-info">
+      <div class="footer-brand-summary">
+        <div class="footer-logo-row">
+          <img src="appicon/wavelet-logo-mark-red.svg" alt="Wavelet Emblem" width="24" height="24">
+          <span class="footer-wordmark">wavelet</span>
+          <span class="footer-pill-tag">Open Source</span>
+        </div>
+        <p class="footer-copy">
+          A personal, aesthetic fork and custom-fit revamp of BitChord.<br>
+          Crafted with care by <a href="https://github.com/ajaykumarreddy-k" target="_blank" rel="noopener">Ajay Kumar Reddy Krishnareddy Gari</a>.
+        </p>
+      </div>
+
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <span class="footer-col-title">PROJECT</span>
+          <a href="https://github.com/ajaykumarreddy-k/Wavelet" target="_blank" rel="noopener">Wavelet GitHub</a>
+          <a href="https://github.com/ajaykumarreddy-k/Wavelet/releases" target="_blank" rel="noopener">Releases & Downloads</a>
+          <a href="https://github.com/ajaykumarreddy-k/Wavelet/blob/main/LICENSE" target="_blank" rel="noopener">GPL v3 License</a>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-col-title">CREDITS</span>
+          <a href="https://github.com/kushagrasinghx/BitChord" target="_blank" rel="noopener">BitChord Upstream</a>
+          <a href="https://github.com/kushagrasinghx" target="_blank" rel="noopener">Kushagra Singh</a>
+          <a href="https://github.com/ajaykumarreddy-k/Wavelet#about-this-fork" target="_blank" rel="noopener">About Fork & Story</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Showstopper Checkered Canvas Finale (Inspired by Reference) -->
+    <div class="container">
+      <div class="footer-checkered-canvas">
+        <!-- Playful Floral & Geometric Doodles -->
+        <div class="doodle doodle-flower-yellow" aria-hidden="true">
+          <svg width="84" height="84" viewBox="0 0 100 100" fill="none" stroke="#F5C443" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M50 20 C42 5, 25 10, 32 28 C18 20, 5 35, 20 48 C5 58, 15 78, 32 70 C25 88, 42 95, 50 80 C58 95, 75 88, 68 70 C85 78, 95 58, 80 48 C95 35, 82 20, 68 28 C75 10, 58 5, 50 20 Z" />
+            <circle cx="50" cy="50" r="10" stroke="#F5C443" stroke-width="4" fill="none" />
+          </svg>
+        </div>
+
+        <div class="doodle doodle-flower-cluster" aria-hidden="true">
+          <svg width="110" height="110" viewBox="0 0 120 120" fill="none">
+            <!-- Coral Red Flower -->
+            <g transform="translate(65, 10)">
+              <circle cx="20" cy="10" r="11" fill="#EE5D5D" />
+              <circle cx="30" cy="22" r="11" fill="#EE5D5D" />
+              <circle cx="25" cy="35" r="11" fill="#EE5D5D" />
+              <circle cx="12" cy="32" r="11" fill="#EE5D5D" />
+              <circle cx="10" cy="18" r="11" fill="#EE5D5D" />
+              <circle cx="20" cy="23" r="7" fill="#FDF3E3" />
+            </g>
+            <!-- Warm Mustard Yellow Flower -->
+            <g transform="translate(10, 40)">
+              <circle cx="18" cy="8" r="9" fill="#F2C244" />
+              <circle cx="27" cy="18" r="9" fill="#F2C244" />
+              <circle cx="22" cy="29" r="9" fill="#F2C244" />
+              <circle cx="10" cy="27" r="9" fill="#F2C244" />
+              <circle cx="8" cy="15" r="9" fill="#F2C244" />
+              <circle cx="17" cy="19" r="5" fill="#4B3900" />
+            </g>
+            <!-- Sage Green Flower -->
+            <g transform="translate(60, 62)">
+              <circle cx="16" cy="8" r="9" fill="#6B9D66" />
+              <circle cx="25" cy="17" r="9" fill="#6B9D66" />
+              <circle cx="21" cy="28" r="9" fill="#6B9D66" />
+              <circle cx="9" cy="25" r="9" fill="#6B9D66" />
+              <circle cx="7" cy="14" r="9" fill="#6B9D66" />
+              <circle cx="16" cy="18" r="5" fill="#2B4626" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="doodle doodle-dot-lime" aria-hidden="true"></div>
+        <div class="doodle doodle-dot-dark" aria-hidden="true"></div>
+
+        <!-- Center Typography Statement -->
+        <div class="checkered-statement">
+          <h2 class="checkered-title">
+            <span class="title-first-line">Redesign, Recustomising</span>
+            <span class="title-second-line">
+              tech I liked
+              <span class="signature-group">
+                <span class="handwritten-signature">ajay</span>
+              </span>
+            </span>
+          </h2>
+        </div>
+
+        <!-- Checkered Bottom Bar -->
+        <div class="checkered-bottom-bar">
+          <div class="checkered-copy">
+            © 2026 Wavelet · Ajay Kumar Reddy Krishnareddy Gari
+          </div>
+
+          <!-- Butter Yellow Social Pills -->
+          <div class="checkered-pills">
+            <a href="https://www.linkedin.com/in/ajay-kumar-reddy-krishnareddygari-a4885b282/" target="_blank" rel="noopener noreferrer" class="pill-btn">LinkedIn</a>
+            <a href="https://github.com/ajaykumarreddy-k" target="_blank" rel="noopener noreferrer" class="pill-btn">GitHub</a>
+            <a href="https://ajaykumarreddykrishnareddygari-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer" class="pill-btn">Portfolio</a>
+          </div>
+
+          <div class="checkered-top-link">
+            <a href="#hero" class="back-to-top-link">Back to Top ↑</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

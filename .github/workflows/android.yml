@@ -29,13 +29,15 @@ jobs:
         echo "LASTFM_API_KEY=${{ secrets.LASTFM_API_KEY }}" > local.properties
         echo "LASTFM_SECRET=${{ secrets.LASTFM_SECRET }}" >> local.properties
 
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > bitchord-release.jks
-        {
-          echo "storeFile=bitchord-release.jks"
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}"
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
-        } > keystore.properties
+        if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > bitchord-release.jks
+          {
+            echo "storeFile=bitchord-release.jks"
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+          } > keystore.properties
+        fi
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -69,6 +71,7 @@ jobs:
           mkdir -p release-apks
           find app/build/outputs/apk/prod/release/ -name "*arm64-v8a*.apk" -exec cp {} "release-apks/Wavelet-v${v}_arm64-v8a.apk" \;
           find app/build/outputs/apk/prod/release/ -name "*armeabi-v7a*.apk" -exec cp {} "release-apks/Wavelet-v${v}_armeabi-v7a.apk" \;
+          find app/build/outputs/apk/prod/release/ -name "*universal*.apk" -exec cp {} "release-apks/Wavelet-v${v}-universal.apk" \;
           find wearos/build/outputs/apk/prod/release/ -name "*.apk" -exec cp {} "release-apks/WaveletWear-v${v}.apk" \;
           ls -lh release-apks
           gh release upload "$tag" release-apks/*.apk --clobber

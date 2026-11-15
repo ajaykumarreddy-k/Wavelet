@@ -102,9 +102,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            // Null without a keystore, like the phone: an unsigned APK rather
-            // than a build failure.
-            signingConfig = signingConfigs.findByName("release")
+            // Null without a keystore, fallback to debug key so APK is signed
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 

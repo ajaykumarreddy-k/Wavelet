@@ -134,15 +134,17 @@ object AppUpdateChecker {
                 val name = asset["name"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
                 val url = asset["browser_download_url"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
                 val ours = (name.startsWith(BuildConfig.UPDATE_APK_PREFIX, ignoreCase = true) ||
-                    name.startsWith("Wavelet", ignoreCase = true) ||
-                    name.startsWith("app-prod", ignoreCase = true) ||
+                    name.startsWith("Wavelet-", ignoreCase = true) ||
+                    name.startsWith("app-prod-", ignoreCase = true) ||
                     name.startsWith("app-", ignoreCase = true)) &&
+                    !name.contains("wear", ignoreCase = true) &&
+                    !name.contains("tv", ignoreCase = true) &&
                     name.endsWith(".apk", ignoreCase = true) &&
                     asset["state"]?.jsonPrimitive?.contentOrNull == "uploaded"
                 if (ours) name.removeSuffix(".apk").removeSuffix(".APK") to url else null
             }
             .orEmpty()
-        apks.firstOrNull { (name, _) -> '_' !in name }?.second
+        apks.firstOrNull { (name, _) -> '_' !in name && !name.contains("wear", ignoreCase = true) }?.second
             ?: Build.SUPPORTED_ABIS.firstNotNullOfOrNull { abi ->
                 apks.firstOrNull { (name, _) -> name.endsWith("_$abi") }?.second
             }

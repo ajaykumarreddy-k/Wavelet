@@ -34,6 +34,7 @@ Thumbs.db
 # Release signing — never commit the key or its passwords
 keystore.properties
 *.jks
+!wavelet-release.jks
 *.keystore
 
 # Project scratch / debug artifacts

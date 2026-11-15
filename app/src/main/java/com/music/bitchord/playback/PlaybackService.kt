@@ -3993,6 +3993,7 @@ class PlaybackService : MediaLibraryService() {
                     videoId = webFallbackId,
                     title = query,
                     artist = "",
+                    thumbnailUrl = null,
                 )
             }
         }

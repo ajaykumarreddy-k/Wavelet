@@ -3570,6 +3570,9 @@ class PlaybackService : MediaLibraryService() {
      */
     private val recoveries = mutableMapOf<String, Int>()
 
+    /** Tracks that have already attempted a YouTube search fallback, preventing infinite retry loops. */
+    private val searchFallbackAttempted = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+
     /**
      * The track [recoverFrom] is about to seek-and-prepare, so that the
      * transition its own retry may fire can be told from the queue moving on or
@@ -3827,6 +3830,40 @@ class PlaybackService : MediaLibraryService() {
             // the middle of the last one. Releasing the choice without dropping
             // the bytes would trade one stuck track for a corrupt one.
             if (givingUp) {
+                // If this unplayable track has not yet attempted a search fallback, search YouTube for
+                // "fetched title + singer name" and play the first matching song before skipping.
+                if (searchFallbackAttempted.add(mediaId)) {
+                    if (searchFallbackAttempted.size > 200) searchFallbackAttempted.clear()
+                    val song = item.toSong()
+                    val title = song.title.trim()
+                    val artist = song.artist.trim()
+                    if (title.isNotBlank()) {
+                        val query = if (artist.isNotBlank()) "$title $artist" else title
+                        TrackLog.w("BitChord", "$mediaId cannot be played ($verdict); attempting YouTube search fallback for '$query'")
+                        val fallbackSong = withContext(Dispatchers.IO) {
+                            findSearchFallback(query, mediaId)
+                        }
+                        if (fallbackSong != null) {
+                            TrackLog.i("BitChord", "Found search fallback for $mediaId: ${fallbackSong.videoId} (${fallbackSong.title})")
+                            searchFallbackAttempted.add(fallbackSong.videoId)
+                            QualityUpgrade.forget(fallbackSong.videoId)
+                            StreamChoice.forget(fallbackSong.videoId)
+                            recoveries.remove(fallbackSong.videoId)
+                            withContext(Dispatchers.Main) {
+                                val live = this@PlaybackService.player ?: return@withContext
+                                if (live.currentMediaItem?.mediaId != mediaId) return@withContext
+                                swappingMediaId = mediaId
+                                val fallbackMediaItem = song.copy(
+                                    videoId = fallbackSong.videoId,
+                                ).toMediaItem()
+                                live.replaceMediaItem(live.currentMediaItemIndex, fallbackMediaItem)
+                                live.seekTo(live.currentMediaItemIndex, 0L)
+                                live.prepare()
+                            }
+                            return@launch
+                        }
+                    }
+                }
                 // A track nobody can play must not leave the player parked in
                 // IDLE on it. Nothing else in this service calls prepare() again,
                 // so before this the queue simply stopped: the notification kept
@@ -3900,6 +3937,94 @@ class PlaybackService : MediaLibraryService() {
             }
         }
         return true
+    }
+
+    private suspend fun findSearchFallback(query: String, failedVideoId: String): Song? {
+        // 1. YouTube Music SONGS search
+        runCatching {
+            val songs = YtMusicRepository.search(query, SearchFilter.SONGS).getOrNull()
+                ?.mapNotNull {
+                    when (it) {
+                        is SearchResult.Track -> it.song
+                        is SearchResult.TopTrack -> it.song
+                        else -> null
+                    }
+                }
+                ?.filter { it.videoId.isNotBlank() && it.videoId != failedVideoId }
+            val first = songs?.firstOrNull()
+            if (first != null) return first
+        }
+
+        // 2. YouTube Music VIDEOS search
+        runCatching {
+            val videos = YtMusicRepository.search(query, SearchFilter.VIDEOS).getOrNull()
+                ?.mapNotNull {
+                    when (it) {
+                        is SearchResult.Track -> it.song
+                        is SearchResult.TopTrack -> it.song
+                        else -> null
+                    }
+                }
+                ?.filter { it.videoId.isNotBlank() && it.videoId != failedVideoId }
+            val first = videos?.firstOrNull()
+            if (first != null) return first
+        }
+
+        // 3. YouTube Music ALL search
+        runCatching {
+            val all = YtMusicRepository.search(query, SearchFilter.ALL).getOrNull()
+                ?.mapNotNull {
+                    when (it) {
+                        is SearchResult.Track -> it.song
+                        is SearchResult.TopTrack -> it.song
+                        else -> null
+                    }
+                }
+                ?.filter { it.videoId.isNotBlank() && it.videoId != failedVideoId }
+            val first = all?.firstOrNull()
+            if (first != null) return first
+        }
+
+        // 4. Web YouTube search: https://www.youtube.com/results?search_query=...
+        runCatching {
+            val webFallbackId = fetchYouTubeWebSearchFirstVideoId(query, failedVideoId)
+            if (webFallbackId != null) {
+                return Song(
+                    videoId = webFallbackId,
+                    title = query,
+                    artist = "",
+                )
+            }
+        }
+
+        return null
+    }
+
+    private suspend fun fetchYouTubeWebSearchFirstVideoId(query: String, failedVideoId: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val encoded = java.net.URLEncoder.encode(query, "UTF-8")
+            val url = "https://www.youtube.com/results?search_query=$encoded"
+            val request = okhttp3.Request.Builder()
+                .url(url)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            val response = com.music.bitchord.data.Http.client.newCall(request).execute()
+            response.use {
+                if (!it.isSuccessful) return@withContext null
+                val html = it.body?.string() ?: return@withContext null
+                val regex = Regex(""""videoId":"([a-zA-Z0-9_-]{11})"""")
+                val matches = regex.findAll(html)
+                for (match in matches) {
+                    val vid = match.groupValues[1]
+                    if (vid != failedVideoId && vid.isNotBlank()) {
+                        return@withContext vid
+                    }
+                }
+            }
+            null
+        } catch (_: Exception) {
+            null
+        }
     }
 
     /**

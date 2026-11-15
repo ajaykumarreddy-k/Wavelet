@@ -548,6 +548,9 @@
     <string name="about_album">About the album</string>
     <string name="nothing_matches">Nothing here matches “%1$s”</string>
     <string name="close_search">Close search</string>
+    <string name="refresh_playlist">Refresh playlist</string>
+    <string name="playlist_already_up_to_date">Playlist is already up to date</string>
+    <string name="playlist_refreshed_with_count">Playlist refreshed (%1$d new songs added)</string>
     <string name="less">Less</string>
     <string name="song_count_with_minutes">%1$s, %2$d minutes</string>
     <string name="song_count_with_duration">%1$s, %2$s</string>

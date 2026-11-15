@@ -108,6 +108,40 @@ object YouTubePlaylistImporter {
     }
 
     /**
+     * Fetches the complete playlist (initial batch plus all continuations) from YouTube / YouTube Music.
+     */
+    suspend fun fetchCompletePlaylist(listId: String): Result<YouTubePlaylistInitialData> {
+        val initialResult = fetchInitialBatch(listId)
+        val data = initialResult.getOrElse { return Result.failure(it) }
+
+        val allSongs = data.initialSongs.toMutableList()
+        var token = data.continuation
+
+        while (!token.isNullOrBlank()) {
+            delay(100)
+            try {
+                val page = YtMusicRepository.moreSongs(token).getOrNull()
+                if (page == null || page.songs.isEmpty()) break
+                allSongs.addAll(page.songs)
+                token = page.continuation?.takeIf { it.isNotBlank() }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed continuation during complete fetch: ${e.message}")
+                break
+            }
+        }
+
+        return Result.success(
+            data.copy(
+                initialSongs = allSongs,
+                continuation = null,
+                isComplete = true,
+            )
+        )
+    }
+
+    /**
      * Lazily fetches remaining songs page by page in the background, invoking [onBatchLoaded] after each batch.
      * Ensures non-blocking streaming of tracks into local storage.
      */

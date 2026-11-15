@@ -19,6 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.slideOutVertically
@@ -74,6 +78,7 @@ import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.Upgrade
 import com.music.bitchord.data.listentogether.ServerConnectionState
@@ -3860,6 +3865,51 @@ private fun BitChordApp(
                                                 if (detailSearching) R.string.close_search else R.string.search_this_list,
                                             ),
                                             tint = MaterialTheme.colorScheme.onSurface,
+                                        )
+                                    }
+                                }
+                                val localPl = remember(detail.browseId, localPlaylists) {
+                                    com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(detail.browseId)
+                                }
+                                val canRefresh = localPl?.sourcePlaylistId != null || detail.browseId.startsWith("VL") || detail.browseId.startsWith("PL")
+                                if (canRefresh) {
+                                    var isRefreshing by remember(detail.browseId) { mutableStateOf(false) }
+                                    val rotation = remember { Animatable(0f) }
+                                    LaunchedEffect(isRefreshing) {
+                                        if (isRefreshing) {
+                                            rotation.animateTo(
+                                                targetValue = rotation.value + 360f,
+                                                animationSpec = infiniteRepeatable(
+                                                    animation = tween(800, easing = LinearEasing),
+                                                    repeatMode = RepeatMode.Restart,
+                                                ),
+                                            )
+                                        } else {
+                                            rotation.snapTo(0f)
+                                        }
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            if (!isRefreshing) {
+                                                isRefreshing = true
+                                                viewModel.refreshPlaylist(detail.browseId) { count ->
+                                                    isRefreshing = false
+                                                    val msg = if (count > 0) {
+                                                        context.getString(R.string.playlist_refreshed_with_count, count)
+                                                    } else {
+                                                        context.getString(R.string.playlist_already_up_to_date)
+                                                    }
+                                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        },
+                                        enabled = !isRefreshing,
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Refresh,
+                                            contentDescription = stringResource(R.string.refresh_playlist),
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.graphicsLayer { rotationZ = rotation.value },
                                         )
                                     }
                                 }

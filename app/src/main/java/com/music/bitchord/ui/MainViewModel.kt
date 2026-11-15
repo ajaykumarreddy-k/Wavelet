@@ -21,6 +21,7 @@ import com.music.bitchord.data.spotify.SPOTIFY_PAGE_PREFIX
 import com.music.bitchord.data.spotify.SpotifyImporter
 import com.music.bitchord.data.spotify.SpotifyLibrary
 import com.music.bitchord.data.spotify.SpotifyTrack
+import com.music.bitchord.data.youtube.YouTubePlaylistImporter
 import com.music.bitchord.data.lyrics.EmbeddedLyrics
 import com.music.bitchord.data.lyrics.LyricLine
 import com.music.bitchord.data.lyrics.LyricsRepository
@@ -2867,10 +2868,70 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun reloadLocalDetail(browseId: String) {
         viewModelScope.launch {
             val state = localPageState(browseId) ?: return@launch
+            val localPlaylist = com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(browseId)
             _detailStack.value = _detailStack.value.map {
                 if (it.browseId == browseId) {
-                    it.copy(songs = state)
+                    val newCredit = if (localPlaylist != null) {
+                        if (!localPlaylist.isComplete) {
+                            "${localPlaylist.songs.size} songs · Syncing in background…"
+                        } else {
+                            getApplication<Application>().getString(R.string.local_playlist_subtitle, localPlaylist.songs.size)
+                        }
+                    } else it.subtitle
+                    val newArtwork = if (localPlaylist != null) {
+                        localPlaylist.thumbnailUrl ?: localPlaylist.songs.firstOrNull { s -> !s.thumbnailUrl.isNullOrBlank() }?.thumbnailUrl ?: it.thumbnailUrl
+                    } else it.thumbnailUrl
+                    val newTitle = if (localPlaylist != null) localPlaylist.title else it.title
+                    it.copy(title = newTitle, subtitle = newCredit, thumbnailUrl = newArtwork, songs = state)
                 } else it
+            }
+        }
+    }
+
+    /**
+     * Refreshes a YouTube-backed playlist (either an imported local playlist or a direct YouTube playlist),
+     * syncing any new songs added on YouTube and updating local storage immediately.
+     */
+    fun refreshPlaylist(browseId: String, onFinished: (newSongsCount: Int) -> Unit = {}) {
+        viewModelScope.launch {
+            val localPlaylist = com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(browseId)
+            val sourceId = localPlaylist?.sourcePlaylistId
+                ?: if (browseId.startsWith("VL") || browseId.startsWith("PL")) browseId.removePrefix("VL")
+                else null
+
+            if (sourceId == null) {
+                reloadLocalDetail(browseId)
+                onFinished(0)
+                return@launch
+            }
+
+            val result = YouTubePlaylistImporter.fetchCompletePlaylist(sourceId)
+            val data = result.getOrNull()
+            if (data == null || data.initialSongs.isEmpty()) {
+                reloadLocalDetail(browseId)
+                onFinished(0)
+                return@launch
+            }
+
+            if (localPlaylist != null) {
+                val existingIds = localPlaylist.songs.map { it.videoId }.toSet()
+                val newSongsAdded = data.initialSongs.count { it.videoId !in existingIds }
+
+                // Preserve custom songs locally added that are not on YouTube
+                val ytIds = data.initialSongs.map { it.videoId }.toSet()
+                val customLocal = localPlaylist.songs.filterNot { it.videoId in ytIds }
+                val merged = data.initialSongs + customLocal
+
+                com.music.bitchord.data.spotify.LocalPlaylistStore.replaceSongs(
+                    id = localPlaylist.id,
+                    newSongs = merged,
+                    thumbnailUrl = data.thumbnailUrl ?: localPlaylist.thumbnailUrl,
+                )
+                reloadLocalDetail(browseId)
+                onFinished(newSongsAdded)
+            } else {
+                reloadLocalDetail(browseId)
+                onFinished(0)
             }
         }
     }

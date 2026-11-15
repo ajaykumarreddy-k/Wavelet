@@ -1,5 +1,6 @@
 package com.music.bitchord.ui.screens
 
+import com.music.bitchord.data.AppUpdateChecker
 import com.music.bitchord.wear.WatchInstaller
 import android.content.Context
 import android.content.Intent
@@ -73,6 +74,7 @@ import androidx.compose.material.icons.rounded.SignalCellularAlt
 import androidx.compose.material.icons.rounded.SmartDisplay
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.SurroundSound
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.WebAssetOff
@@ -300,6 +302,8 @@ fun SettingsScreen(
     var showPerformanceWarning by remember { mutableStateOf(false) }
     var showPerformanceConfirmation by remember { mutableStateOf(false) }
     val backupScope = rememberCoroutineScope()
+    val updateScope = rememberCoroutineScope()
+    var isCheckingUpdate by remember { mutableStateOf(false) }
 
     val batterySettingsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -529,12 +533,42 @@ fun SettingsScreen(
                 )
             }
             val exportDownloadsTitle = stringResource(R.string.export_compatible_downloads)
-            row(exportDownloadsTitle, "music folder", divided = false) {
+            row(exportDownloadsTitle, "music folder") {
                 SettingsSubRow(
                     title = exportDownloadsTitle,
                     checked = exportDownloads,
                     onCheckedChange = AppSettings::setExportDownloads,
                     subtitle = "Music/BitChord".takeIf { exportDownloads },
+                )
+            }
+            val updateAppTitle = stringResource(R.string.update_app)
+            row(updateAppTitle, "update", "version", "github", "release", "download", divided = false) {
+                SettingsRow(
+                    icon = Icons.Rounded.SystemUpdate,
+                    title = updateAppTitle,
+                    subtitle = stringResource(R.string.update_app_subtitle, version),
+                    value = if (isCheckingUpdate) stringResource(R.string.checking) else null,
+                    enabled = !isCheckingUpdate,
+                    onClick = {
+                        if (isCheckingUpdate) return@SettingsRow
+                        isCheckingUpdate = true
+                        Toast.makeText(context, context.getString(R.string.checking_for_updates), Toast.LENGTH_SHORT).show()
+                        updateScope.launch {
+                            val result = AppUpdateChecker.checkManual()
+                            isCheckingUpdate = false
+                            when (result) {
+                                AppUpdateChecker.CheckResult.UPDATE_AVAILABLE -> {
+                                    // AppUpdateChecker.available state flow updated; dialog shows automatically
+                                }
+                                AppUpdateChecker.CheckResult.UP_TO_DATE -> {
+                                    Toast.makeText(context, context.getString(R.string.app_up_to_date, version), Toast.LENGTH_SHORT).show()
+                                }
+                                AppUpdateChecker.CheckResult.ERROR -> {
+                                    Toast.makeText(context, context.getString(R.string.update_check_failed), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    },
                 )
             }
         }

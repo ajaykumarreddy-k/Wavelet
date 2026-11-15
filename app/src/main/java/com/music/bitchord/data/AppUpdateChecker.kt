@@ -65,7 +65,15 @@ object AppUpdateChecker {
     @Volatile
     private var downloadCancelled = false
 
-    suspend fun check() = withContext(Dispatchers.IO) {
+    enum class CheckResult {
+        UPDATE_AVAILABLE,
+        UP_TO_DATE,
+        ERROR,
+    }
+
+    suspend fun check(): CheckResult = checkManual()
+
+    suspend fun checkManual(): CheckResult = withContext(Dispatchers.IO) {
         val request = Request.Builder()
             .url(LATEST_RELEASE_URL)
             .header("Accept", "application/vnd.github+json")
@@ -73,10 +81,10 @@ object AppUpdateChecker {
             .build()
         runCatching {
             Http.client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) return@use
-                val body = response.body?.string() ?: return@use
-                val release = json.parseToJsonElement(body) as? JsonObject ?: return@use
-                val tag = release["tag_name"]?.jsonPrimitive?.contentOrNull ?: return@use
+                if (!response.isSuccessful) return@use CheckResult.ERROR
+                val body = response.body?.string() ?: return@use CheckResult.ERROR
+                val release = json.parseToJsonElement(body) as? JsonObject ?: return@use CheckResult.ERROR
+                val tag = release["tag_name"]?.jsonPrimitive?.contentOrNull ?: return@use CheckResult.ERROR
                 val remoteVersion = tag.removePrefix("v").removePrefix("V")
                 if (isNewer(remoteVersion, BuildConfig.VERSION_NAME)) {
                     _available.value = UpdateInfo(
@@ -86,9 +94,12 @@ object AppUpdateChecker {
                         apkUrl = apkAssetUrl(release),
                         notes = release["body"]?.jsonPrimitive?.contentOrNull,
                     )
+                    CheckResult.UPDATE_AVAILABLE
+                } else {
+                    CheckResult.UP_TO_DATE
                 }
             }
-        }
+        }.getOrElse { CheckResult.ERROR }
     }
 
     /**

@@ -87,7 +87,7 @@
 
 <p>Get the latest pre-built APK packages directly from GitHub Releases:</p>
 
-[**🚀 Download Wavelet v1.0.2 (Latest Release)**](https://github.com/ajaykumarreddy-k/Wavelet/releases/tag/v1.0.2)
+[**🚀 Download Wavelet v2.0.0 (Latest Release)**](https://github.com/ajaykumarreddy-k/Wavelet/releases/tag/v2.0.0)
 
 </div>
 
@@ -95,13 +95,13 @@
 
 | Package | Description | Target |
 | :--- | :--- | :--- |
-| **[`Wavelet-v1.0.2_arm64-v8a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.0.2/Wavelet-v1.0.2_arm64-v8a.apk)** | High-performance optimized build (ARM 64-bit) | Most modern Android phones & tablets (Recommended) |
-| **[`Wavelet-v1.0.2_armeabi-v7a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.0.2/Wavelet-v1.0.2_armeabi-v7a.apk)** | 32-bit legacy ARM build | Older Android devices |
-| **[`Wavelet-v1.0.2-universal-debug.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.0.2/Wavelet-v1.0.2-universal-debug.apk)** | Universal multi-architecture build | Any Android device / Emulators |
-| **[`WaveletWear-v1.0.2.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v1.0.2/WaveletWear-v1.0.2.apk)** | Wear OS companion app | Wear OS Smartwatches |
+| **[`Wavelet-v2.0.0_arm64-v8a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0/Wavelet-v2.0.0_arm64-v8a.apk)** | High-performance optimized build (ARM 64-bit) | Most modern Android phones & tablets (Recommended) |
+| **[`Wavelet-v2.0.0_armeabi-v7a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0/Wavelet-v2.0.0_armeabi-v7a.apk)** | 32-bit legacy ARM build | Older Android devices |
+| **[`Wavelet-v2.0.0-universal-debug.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0/Wavelet-v2.0.0-universal-debug.apk)** | Universal multi-architecture build | Any Android device / Emulators |
+| **[`WaveletWear-v2.0.0.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0/WaveletWear-v2.0.0.apk)** | Wear OS companion app | Wear OS Smartwatches |
 
 > [!TIP]
-> **Which one should I install?** If you are using a modern smartphone, download **`Wavelet-v1.0.2_arm64-v8a.apk`**. Future releases can be automatically downloaded and installed right from inside the app!
+> **Which one should I install?** If you are using a modern smartphone, download **`Wavelet-v2.0.0_arm64-v8a.apk`**. Future releases can be automatically downloaded and installed right from inside the app!
 
 ---
 

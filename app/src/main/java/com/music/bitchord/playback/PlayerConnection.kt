@@ -645,59 +645,23 @@ private fun Song.pickedMixQuery(configId: String): String {
 }
 
 fun Song.toMediaItem(): MediaItem {
-    val sourceTrack = SourceRegistry.parseTrackKey(videoId)
-    // A row from search or a playlist carries no file of its own, but the track
-    // may still be on disk from a download — see [Downloads.saved].
-    //
-    // Answered *here*, where the item is built, rather than in the player's
-    // stream resolver, because everything downstream decides what to do by the
-    // scheme the item arrives with: [AudioCache.playbackFactory] sends file and
-    // content URIs past the disk cache instead of writing a second copy of
-    // them, and DefaultDataSource picks ContentDataSource off the same scheme.
-    // A local URI substituted further down lands inside the half of the chain
-    // that only speaks HTTP, where OkHttp rejects it as a malformed URL — which
-    // is what a downloaded track played from search used to do, four times over,
-    // before giving up.
-    //
-    // Both halves are checked, not just the record: a claim about a folder this
-    // app does not own — see [Downloads] — outlives the file it names whenever
-    // one is deleted from a file manager, and trusting either unchecked sent the
-    // player a `file://` uri to a path that had simply stopped existing.
-    //
-    // [localUri] needs it just as much as the lookup does, and for a reason that
-    // is easy to miss: it is not only set from a folder read that just verified
-    // the file. It also round-trips off the player's own item through
-    // [MediaItem.toSong], so an item waiting in the live queue can carry a URI
-    // that has become stale since it was created. Checking only the lookup
-    // leaves that path unguarded.
+    val realVideoId = if (videoId.startsWith("spotify_")) {
+        com.music.bitchord.data.spotify.SpotifySongResolver.getCached(videoId) ?: videoId
+    } else {
+        videoId
+    }
+    val sourceTrack = SourceRegistry.parseTrackKey(realVideoId)
     val offlineUri = localUri?.takeUnless(Downloads::isMissingLocalFile)
-        ?: Downloads.verifiedSavedUri(videoId)
+        ?: Downloads.verifiedSavedUri(realVideoId)
     val uriString = offlineUri ?: when {
-        videoId.startsWith("content://") || videoId.startsWith("file://") -> videoId
-        // Title, artist and runtime ride along in the URI because they are what
-        // a cross-source match is made on, and the resolver runs on ExoPlayer's
-        // loader thread with nothing but a DataSpec in hand — see
-        // [SourceResolver.resolve]. Read-ahead resolves tracks that aren't the
-        // current item, so reaching back for the session's metadata isn't an
-        // option either.
+        realVideoId.startsWith("content://") || realVideoId.startsWith("file://") -> realVideoId
         sourceTrack != null -> SourceRegistry.trackUri(sourceTrack.first, sourceTrack.second)
             .let { "$it${matchQuery()}${pickedMixQuery(sourceTrack.first)}" }
-        // A track the listener reverted by hand stays reverted — see
-        // [OriginalVersion]. Applied here rather than at the one menu that
-        // reverts, because "stays" has to mean the next queue entry built for
-        // this song too: another play from a list, a restored queue, Android
-        // Auto. Everything downstream reads the item's URI and nothing reads
-        // the preference, so this is the only place it has to be said.
-        OriginalVersion.isPinned(videoId) -> directYouTubeUri()
-        // The same three fields, for the same reason, on the YouTube path: a
-        // source ranked above YouTube gets offered this track before YouTube
-        // resolves it — see [SourceResolver.substituteForYouTube] — and that
-        // match is made on them, which the loader thread has no other way to
-        // reach.
-        else -> "bitchord://watch?v=$videoId${matchQuery()}"
+        OriginalVersion.isPinned(realVideoId) -> directYouTubeUri(realVideoId)
+        else -> "bitchord://watch?v=$realVideoId${matchQuery()}"
     }
     return MediaItem.Builder()
-        .setMediaId(videoId)
+        .setMediaId(realVideoId)
         .setUri(resolvePlaybackUri(uriString, localPath))
     .setMediaMetadata(
         MediaMetadata.Builder()
@@ -790,8 +754,8 @@ fun Song.toDirectYouTubeMediaItem(): MediaItem =
         .setUri(directYouTubeUri())
         .build()
 
-private fun Song.directYouTubeUri(): String =
-    "bitchord://watch?v=$videoId${matchQuery()}&$DIRECT_YOUTUBE_PARAMETER=1&q=original"
+private fun Song.directYouTubeUri(targetVideoId: String = videoId): String =
+    "bitchord://watch?v=$targetVideoId${matchQuery()}&$DIRECT_YOUTUBE_PARAMETER=1&q=original"
 
 /**
  * Whether there is a YouTube upload behind this song to go back *to* — the

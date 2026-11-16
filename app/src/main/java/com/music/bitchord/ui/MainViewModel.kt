@@ -2951,7 +2951,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             if (songs.isEmpty()) UiState.Error(empty()) else UiState.Success(songs)
 
         com.music.bitchord.data.spotify.LocalPlaylistStore.getPlaylist(browseId)?.let { playlist ->
-            return nonEmpty(playlist.songs) { text(R.string.spotify_import_empty_playlist) }
+            val hasSpotify = playlist.songs.any { it.videoId.startsWith("spotify_") }
+            if (hasSpotify) {
+                com.music.bitchord.data.spotify.SpotifySongResolver.prefetch(playlist.songs)
+            }
+            val songs = playlist.songs.map { s ->
+                if (s.videoId.startsWith("spotify_")) {
+                    val cached = com.music.bitchord.data.spotify.SpotifySongResolver.getCached(s.videoId)
+                    if (cached != null) s.copy(videoId = cached) else s
+                } else s
+            }
+            return nonEmpty(songs) { text(R.string.spotify_import_empty_playlist) }
         }
         remoteLibrary(browseId)?.let { return remoteSongsState(it) }
         LocalGroups.folderOf(browseId)?.let { folderId ->

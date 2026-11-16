@@ -232,6 +232,9 @@ fun SpotifyPlaylistDetailScreen(
                                             songs = waveletSongs,
                                             thumbnailUrl = coverUrl,
                                         )
+                                        // Prefetch and warm YouTube video ID mappings in the background
+                                        com.music.bitchord.data.spotify.SpotifySongResolver.prefetch(waveletSongs)
+
                                         importingToWavelet = false
                                         Toast.makeText(context, "Saved '$playlistName' to Wavelet playlists!", Toast.LENGTH_LONG).show()
                                     }

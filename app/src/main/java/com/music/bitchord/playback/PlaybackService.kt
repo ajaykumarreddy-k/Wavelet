@@ -1401,8 +1401,26 @@ class PlaybackService : MediaLibraryService() {
                     )
                     .build()
             }
-            val videoId = dataSpec.uri.getQueryParameter("v")
+            val rawVideoId = dataSpec.uri.getQueryParameter("v")
                 ?: return@Resolver dataSpec
+            val videoId = if (rawVideoId.startsWith("spotify_")) {
+                val target = SourceResolver.targetIn(dataSpec.uri)
+                val fallbackSong = songCache[rawVideoId]
+                val title = target.title.ifBlank { fallbackSong?.title.orEmpty() }
+                val artist = target.artist.ifBlank { fallbackSong?.artist.orEmpty() }
+                val resolved = runBlocking(about) {
+                    com.music.bitchord.data.spotify.SpotifySongResolver.resolveSpotifyToYouTube(
+                        spotifyVideoId = rawVideoId,
+                        title = title,
+                        artist = artist,
+                        durationSec = target.durationSec ?: fallbackSong?.durationText?.let { TrackMatcher.secondsOf(it) },
+                        album = target.album ?: fallbackSong?.albumName,
+                    )
+                }
+                resolved ?: rawVideoId
+            } else {
+                rawVideoId
+            }
             // An explicit rollback is not a preference for a different
             // candidate: it means this exact YouTube rendition, immediately.
             // Answer it before StreamChoice, the module race and a pending

@@ -993,8 +993,13 @@ object AudioCache {
                         // minting it spends a client walk to fill a cache entry
                         // that is never read.
                         if (id == next && warmed != null) continue
-                        runCatching { StreamResolver.resolve(id) }
-                            .onFailure { TrackLog.d(TAG, "queue warm-up skipped $id: ${it.message}", about = id) }
+                        val effectiveId = if (id.startsWith("spotify_")) {
+                            com.music.bitchord.data.spotify.SpotifySongResolver.getCached(id)
+                        } else id
+                        if (!effectiveId.isNullOrBlank()) {
+                            runCatching { StreamResolver.resolve(effectiveId) }
+                                .onFailure { TrackLog.d(TAG, "queue warm-up skipped $id: ${it.message}", about = id) }
+                        }
                         delay(QUEUE_RESOLVE_STAGGER_MS)
                     }
                 }

@@ -622,6 +622,7 @@ private fun BitChordApp(
     // to cover the tab bar and mini player, which are drawn after it.
     var showDiscord by remember { mutableStateOf(false) }
     var showSpotify by remember { mutableStateOf(false) }
+    var spotifyDetailNav by remember { mutableStateOf<com.music.bitchord.spotify.ui.SpotifyDetailNav?>(null) }
     var showDiscordLogin by remember { mutableStateOf(false) }
     var showSpotifyLogin by remember { mutableStateOf(false) }
     var discordDialog by remember { mutableStateOf<DiscordDialog?>(null) }
@@ -2561,7 +2562,10 @@ private fun BitChordApp(
         BackHandler(enabled = showDiscord) {
             showDiscord = false
         }
-        BackHandler(enabled = showSpotify && detail == null) {
+        BackHandler(enabled = showSpotify && spotifyDetailNav != null) {
+            spotifyDetailNav = null
+        }
+        BackHandler(enabled = showSpotify && spotifyDetailNav == null && detail == null) {
             showSpotify = false
         }
         BackHandler(enabled = showAccountScrobbling && !showDiscord && !showSpotify) {
@@ -2794,20 +2798,27 @@ private fun BitChordApp(
                             landingPage = replayLandingPage,
                         )
                     } else if (key == "spotify") {
-                        SpotifyLibraryScreen(
-                            onOpenPlaylist = { playlist ->
-                                viewModel.openDetail(
-                                    browseId = SPOTIFY_PAGE_PREFIX + playlist.id,
-                                    title = playlist.name,
-                                    subtitle = playlist.owner ?: context.getString(R.string.spotify),
-                                    thumbnailUrl = playlist.imageUrl,
-                                    type = BrowseType.PLAYLIST,
-                                )
-                            },
-                            onOpenLogin = { showSpotifyLogin = true },
-                            onOpenTokenSetup = { showSpotifyCanvasAuth = true },
-                            contentPadding = listPadding,
-                        )
+                        val nav = spotifyDetailNav
+                        if (nav != null) {
+                            com.music.bitchord.spotify.ui.SpotifyPlaylistDetailScreen(
+                                playlistId = nav.id,
+                                playlistName = nav.name,
+                                isOwnedOrCollab = nav.isOwnedOrCollab,
+                                coverUrl = nav.coverUrl,
+                                ownerName = nav.ownerName,
+                                onNavigateBack = { spotifyDetailNav = null },
+                                onImportViaLink = { showYouTubeImportDialog = true },
+                            )
+                        } else {
+                            com.music.bitchord.spotify.ui.SpotifyPlaylistsScreen(
+                                onNavigateBack = { showSpotify = false },
+                                onOpenLogin = { showSpotifyLogin = true },
+                                onOpenPlaylistDetail = { id, name, owned, cover, owner ->
+                                    spotifyDetailNav = com.music.bitchord.spotify.ui.SpotifyDetailNav(id, name, owned, cover, owner)
+                                },
+                                onOpenYouTubeImport = { showYouTubeImportDialog = true },
+                            )
+                        }
                     } else if (key == "discord") {
                         DiscordScreen(
                             song = player.song,
@@ -3403,6 +3414,7 @@ private fun BitChordApp(
                             onShelfItemLongPress = onBrowseLongPress,
                             onNewPlaylist = { creatingPlaylist = true },
                             onImportYouTubePlaylist = { showYouTubeImportDialog = true },
+                            onImportSpotifyPlaylist = { showSpotify = true },
                             onShowAll = { shelf -> libraryShowAll = shelf },
                             replay = {
                                 LibraryTotalTimeCard(
@@ -5391,6 +5403,7 @@ private fun BitChordApp(
                         onConnected = { token ->
                             AppSettings.setSpotifySpdcToken(token)
                             showSpotifyLogin = false
+                            com.music.bitchord.spotify.auth.SpotifyTokenStore.onWebLoginConnected(context, token)
                         },
                     )
                 }

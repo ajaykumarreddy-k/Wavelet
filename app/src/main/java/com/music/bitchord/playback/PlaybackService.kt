@@ -850,6 +850,7 @@ class PlaybackService : MediaLibraryService() {
         }
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
+            isWaveletPlaying = isPlaying
             // The player this fired on, which is by definition the one the
             // session is currently pointed at.
             val exoPlayer = player ?: return
@@ -7239,6 +7240,7 @@ class PlaybackService : MediaLibraryService() {
 
 
     override fun onDestroy() {
+        isWaveletPlaying = false
         WearBridge.attachStreams(null)
         WearBridge.releaseSpeaker()
         // Let go of the receiver's player but leave its session alone: a
@@ -8755,7 +8757,10 @@ class PlaybackService : MediaLibraryService() {
             )
             .build()
 
-    private companion object {
+    companion object {
+        @Volatile
+        var isWaveletPlaying: Boolean = false
+            internal set
         const val MEDIA_ROOT_ID = "root"
         const val MEDIA_RECENTS_ID = "recents"
         const val MEDIA_QUICK_PICKS_ID = "quick_picks"

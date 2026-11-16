@@ -61,6 +61,8 @@ fun libraryLinks(): List<LibraryLink> {
     val smbHost by AppSettings.smbHost.collectAsStateWithLifecycle()
     val smbShare by AppSettings.smbShare.collectAsStateWithLifecycle()
     val showCacheFolder by AppSettings.showCacheFolder.collectAsStateWithLifecycle()
+    val spotifyLoggedIn by com.music.bitchord.spotify.auth.SpotifyTokenStore.isLoggedIn.collectAsStateWithLifecycle()
+    val spotifyUserName by com.music.bitchord.spotify.auth.SpotifyTokenStore.userName.collectAsStateWithLifecycle()
     fun link(title: String, subtitle: String, browseId: String, icon: ImageVector = deviceFolderIcon(browseId) ?: Icons.Rounded.Cloud) = LibraryLink(
         item = ShelfItem(
             title = title,
@@ -81,6 +83,16 @@ fun libraryLinks(): List<LibraryLink> {
             stringResource(R.string.local_music),
             stringResource(R.string.audio_files_on_device),
             "local:all",
+        ),
+        link(
+            "Spotify",
+            if (spotifyLoggedIn) {
+                if (!spotifyUserName.isNullOrBlank()) "Connected as $spotifyUserName" else "Connected"
+            } else {
+                "Import & browse playlists"
+            },
+            SPOTIFY_BROWSE_ID,
+            Icons.Rounded.Cloud,
         ),
         // Opt-in from Settings → Storage: what the song cache is holding from
         // YouTube and JioSaavn. See [com.music.bitchord.playback.AudioCache.cachedSongs].
@@ -127,6 +139,7 @@ fun deviceFolderIcon(browseId: String): ImageVector? = when (browseId) {
     "local:downloads" -> Icons.Rounded.Download
     "local:all" -> Icons.Rounded.Folder
     CACHE_FOLDER_BROWSE_ID -> Icons.Rounded.Storage
+    SPOTIFY_BROWSE_ID -> Icons.Rounded.Cloud
     com.music.bitchord.data.webdav.WebDavConfig.BROWSE_ID -> Icons.Rounded.Cloud
     com.music.bitchord.data.smb.SmbConfig.BROWSE_ID -> Icons.Rounded.Lan
     else -> null

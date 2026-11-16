@@ -493,9 +493,9 @@ val composeMainClass = "com.music.bitchord.desktop.MainKt"
 
 compose.desktop {
     application {
-        javaHome = javaToolchains.launcherFor(java.toolchain).map {
-            it.metadata.installationPath.asFile.absolutePath
-        }.get()
+        javaHome = runCatching {
+            javaToolchains.launcherFor(java.toolchain).get().metadata.installationPath.asFile.absolutePath
+        }.getOrNull() ?: System.getProperty("java.home")
         mainClass = composeMainClass
         jvmArgs("-Xmx512m")
         jvmArgs("-XX:+UseG1GC", "-XX:G1PeriodicGCInterval=20000", "-XX:G1PeriodicGCSystemLoadThreshold=0")

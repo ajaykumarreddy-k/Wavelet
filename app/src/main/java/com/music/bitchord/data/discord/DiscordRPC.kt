@@ -157,8 +157,14 @@ class DiscordRPC(
         /** Discord draws the sleeve at roughly 96dp; 480px covers it on any density. */
         private const val ART_PX = 480
 
-        fun watchUrl(song: Song): String =
-            "https://music.youtube.com/watch?v=${song.videoId}"
+        fun watchUrl(song: Song): String = when {
+            song.videoId.startsWith("spotify:") ->
+                "https://open.spotify.com/track/${song.videoId.removePrefix("spotify:")}"
+            song.videoId.startsWith("spotify_") ->
+                "https://open.spotify.com/track/${song.videoId.removePrefix("spotify_")}"
+            else ->
+                "https://music.youtube.com/watch?v=${song.videoId}"
+        }
 
         /**
          * Resolves template variables in text.

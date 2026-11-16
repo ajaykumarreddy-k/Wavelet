@@ -12,7 +12,7 @@
 [![Release](https://img.shields.io/github/v/release/ajaykumarreddy-k/Wavelet?color=blue&label=Latest%20Release)](https://github.com/ajaykumarreddy-k/Wavelet/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-[**Downloads & Releases**](#download--releases) · [**Features**](#features) · [**About Fork**](#about-this-fork) · [**Contributing**](#contributing) · [**Disclaimer**](#disclaimer)
+[**Downloads & Releases**](#download--releases) · [**Features**](features.md) · [**Spotify Guide**](spotify.md) · [**About Fork**](#about-this-fork) · [**Contributing**](#contributing) · [**Disclaimer**](#disclaimer)
 
 </div>
 
@@ -87,7 +87,7 @@
 
 <p>Get the latest pre-built APK packages directly from GitHub Releases:</p>
 
-[**🚀 Download Wavelet v2.0.0.1 (Latest Release)**](https://github.com/ajaykumarreddy-k/Wavelet/releases/tag/v2.0.0.1)
+[**🚀 Download Wavelet v2.1.0 (Latest Release)**](https://github.com/ajaykumarreddy-k/Wavelet/releases/tag/v2.1.0)
 
 </div>
 
@@ -95,15 +95,15 @@
 
 | Package | Description | Target |
 | :--- | :--- | :--- |
-| **[`Wavelet-v2.0.0.1_arm64-v8a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0.1/Wavelet-v2.0.0.1_arm64-v8a.apk)** | High-performance optimized build (ARM 64-bit) | Most modern Android phones & tablets (Recommended) |
-| **[`Wavelet-v2.0.0.1_armeabi-v7a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0.1/Wavelet-v2.0.0.1_armeabi-v7a.apk)** | 32-bit legacy ARM build | Older Android devices |
-| **[`Wavelet-v2.0.0.1.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.0.0.1/Wavelet-v2.0.0.1.apk)** | Universal multi-architecture build | Any Android device / Emulators / Sideloading |
+| **[`Wavelet-v2.1.0_arm64-v8a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.1.0/Wavelet-v2.1.0_arm64-v8a.apk)** | High-performance optimized build (ARM 64-bit) | Most modern Android phones & tablets (Recommended) |
+| **[`Wavelet-v2.1.0_armeabi-v7a.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.1.0/Wavelet-v2.1.0_armeabi-v7a.apk)** | 32-bit legacy ARM build | Older Android devices |
+| **[`Wavelet-v2.1.0.apk`](https://github.com/ajaykumarreddy-k/Wavelet/releases/download/v2.1.0/Wavelet-v2.1.0.apk)** | Universal multi-architecture build | Any Android device / Emulators / Sideloading |
 
 > [!NOTE]
 > **Wear OS Companion App:** Smartwatch companion builds are decoupled and maintained separately to prevent installation conflicts with mobile devices.
 
 > [!TIP]
-> **Which one should I install?** If you are using a modern smartphone, download **`Wavelet-v2.0.0.1_arm64-v8a.apk`** (or the universal **`Wavelet-v2.0.0.1.apk`**). Future releases can be automatically downloaded and installed right from inside the app!
+> **Which one should I install?** If you are using a modern smartphone, download **`Wavelet-v2.1.0_arm64-v8a.apk`** (or the universal **`Wavelet-v2.1.0.apk`**). Future releases can be automatically downloaded and installed right from inside the app!
 
 ---
 
@@ -132,6 +132,23 @@ Run the desktop app directly:
 .\gradlew.bat :desktopApp:run
 ```
 For packaging and platform setup, see [DESKTOP.md](DESKTOP.md).
+
+### Spotify Integration
+
+Wavelet includes read-only Spotify integration (view playlists, browse Liked Songs, import playlists to Wavelet, and mirror Now-Playing track info to Discord Rich Presence).
+
+#### Connecting Spotify:
+1. Open Wavelet and navigate to **Settings** > **Spotify** or tap **Import from Spotify** in the Library tab.
+2. Tap **Sign in with Spotify**.
+3. A secure in-app browser window will open displaying Spotify's official login page.
+4. Log in normally using your regular Spotify email/username & password, Google, or Apple account.
+5. Once logged in, the window closes and your Spotify playlists and Liked Songs are ready to browse and import!
+
+For detailed architectural and technical documentation on how this works, see [spotify.md](spotify.md) and [features.md](features.md).
+
+> [!WARNING]
+> **Spotify Account Safety Notice & Disclaimer:**
+> I am not responsible for any Spotify account bans or suspensions, although it is an extremely rare case. Wavelet operates completely read-only over standard HTTPS web player endpoints without modifying any Spotify account data or bypassing DRM. Use of this integration is at your own discretion.
 
 ---
 

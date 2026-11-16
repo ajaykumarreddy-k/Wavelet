@@ -85,6 +85,7 @@ fun LibraryScreen(
     onShelfItemLongPress: (ShelfItem) -> Unit,
     onNewPlaylist: () -> Unit,
     onImportYouTubePlaylist: (() -> Unit)? = null,
+    onImportSpotifyPlaylist: (() -> Unit)? = null,
     /**
      * A shelf's "Show all" — every shelf's row here stops at five cards (see
      * [LibraryGridShelf]), so this is the only way to reach whatever didn't
@@ -157,6 +158,7 @@ fun LibraryScreen(
                     onItemLongPress = onShelfItemLongPress,
                     onNewPlaylist = onNewPlaylist,
                     onImportYouTubePlaylist = onImportYouTubePlaylist,
+                    onImportSpotifyPlaylist = onImportSpotifyPlaylist,
                     onShowAll = { onShowAll(playlistShelf) },
                     pinnedPlaylists = pinnedPlaylists,
                 )
@@ -245,6 +247,7 @@ private fun PlaylistShelf(
     onItemLongPress: (ShelfItem) -> Unit,
     onNewPlaylist: () -> Unit,
     onImportYouTubePlaylist: (() -> Unit)? = null,
+    onImportSpotifyPlaylist: (() -> Unit)? = null,
     onShowAll: () -> Unit,
     pinnedPlaylists: List<String> = emptyList(),
 ) {
@@ -268,6 +271,14 @@ private fun PlaylistShelf(
                         label = stringResource(Res.string.import_youtube_playlist),
                         subtitle = stringResource(Res.string.saved_to_local),
                         onClick = onImportYouTubePlaylist,
+                    )
+                }
+                if (onImportSpotifyPlaylist != null) {
+                    NewShelfCard(
+                        icon = BitChordIcons.MusicNote,
+                        label = "Import from Spotify",
+                        subtitle = stringResource(Res.string.saved_to_local),
+                        onClick = onImportSpotifyPlaylist,
                     )
                 }
             }

@@ -230,6 +230,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".spotify.auth.SpotifyAuthActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="wavelet"
+                    android:host="spotify-callback" />
+            </intent-filter>
+        </activity>
+
         <!--
           The launcher entries live on aliases, not on MainActivity, so the user can
           swap the home-screen icon by enabling one alias and disabling the others

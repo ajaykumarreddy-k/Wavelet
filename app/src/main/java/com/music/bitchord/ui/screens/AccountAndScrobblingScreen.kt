@@ -93,6 +93,25 @@ fun AccountAndScrobblingScreen(
             )
         }
 
+        val spotifyLoggedIn by com.music.bitchord.spotify.auth.SpotifyTokenStore.isLoggedIn.collectAsStateWithLifecycle()
+        val spotifyUserName by com.music.bitchord.spotify.auth.SpotifyTokenStore.userName.collectAsStateWithLifecycle()
+
+        SettingsGroup(
+            header = "Spotify",
+            footer = "Connect your Spotify account (Dev Mode, read-only) to browse playlists, import saved tracks, and share currently-playing to Discord.",
+        ) {
+            SettingsRow(
+                icon = Icons.Rounded.LibraryMusic,
+                title = "Spotify Account",
+                subtitle = if (spotifyLoggedIn) {
+                    if (!spotifyUserName.isNullOrBlank()) "Connected as $spotifyUserName" else "Connected"
+                } else {
+                    "Tap to connect"
+                },
+                onClick = onOpenSpotify,
+            )
+        }
+
         if (AppSettings.scrobblingAvailable) {
             SettingsGroup(
                 header = stringResource(R.string.scrobbling),

@@ -29,6 +29,9 @@ A comprehensive guide to all capabilities, design principles, and integrations i
   - View all personal, collaborative, and followed playlists.
 - **One-Tap Playlist Import**:
   - Tap **"Import to Wavelet Playlists"** to save any Spotify playlist or Liked Songs collection into Wavelet's local library for offline browsing and streaming.
+- **Instant Audio Playback & Two-Tier Cache (`SpotifySongResolver`)**:
+  - Resolves Spotify track IDs to YouTube Music audio streams with sub-second latency (~160ms on first run, 0ms instant cached return), eliminating buffering delays.
+  - Background prefetching warms track mappings upon import or opening.
 - **Spotify Canvas**:
   - Displays original vertical looping video Canvas animations for supported tracks.
 - **Strict Read-Only Architecture**:

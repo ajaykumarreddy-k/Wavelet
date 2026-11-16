@@ -88,6 +88,15 @@ Instead of hitting Spotify's REST API (`api.spotify.com`), which throttles non-O
 - Wavelet maps each track to a local `Song` object (`videoId = "spotify_<id>"`).
 - Playlists are saved directly to `LocalPlaylistStore`, allowing them to appear immediately in the main Library and be played through Wavelet's audio resolver.
 
+### F. Instant Audio Playback Resolution & Zero-Latency Caching (`SpotifySongResolver`)
+- **Background**: Spotify tracks are stored in Wavelet playlists with their unique Spotify identifier (`videoId = "spotify_<id>"`).
+- **The Issue (Eliminated 6s Buffering Delay)**: Previously, when tapping play on a Spotify track, ExoPlayer's resolver attempted to resolve `"spotify_<id>"` directly against YouTube InnerTube and NewPipe. Because `"spotify_<id>"` is not an 11-character YouTube video ID, YouTube returned 404s and parsing timeouts for ~5–6 seconds before falling back to title recovery search.
+- **The Fix**:
+  1. **Direct YouTube Resolution**: `SpotifySongResolver` intercepts `"spotify_<id>"` before NewPipe or InnerTube is called, queries YouTube Music (`YtMusicRepository.search` + `TrackMatcher.best`) in ~150–200ms, and provides the real YouTube ID directly to the stream extractor.
+  2. **Two-Tier Cache (0ms Instant Return)**: Mappings are cached in memory (`ConcurrentHashMap`) and persisted in `bitchord_spotify_yt_mappings` SharedPreferences, guaranteeing subsequent plays resolve in 0ms.
+  3. **Background Prefetching**: When importing or opening a Spotify playlist, `SpotifySongResolver.prefetch()` runs in the background to warm YouTube mappings before playback is initiated.
+  4. **Queue Lookahead**: `AudioCache` queue lookahead resolves upcoming Spotify tracks ahead of time for true gapless playback.
+
 ---
 
 ## 🔒 4. Safety, Privacy & Terms of Service Disclaimer

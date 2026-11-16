@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -251,21 +253,27 @@ private fun PlaylistShelf(
     onShowAll: () -> Unit,
     pinnedPlaylists: List<String> = emptyList(),
 ) {
-    LibraryGridShelf(
-        shelf = shelf,
-        onItemClick = onItemClick,
-        onItemLongPress = onItemLongPress,
-        onShowAll = onShowAll,
-        pinnedPlaylists = pinnedPlaylists,
-        leadingCard = {
-            Row(horizontalArrangement = Arrangement.spacedBy(LIBRARY_GRID_SPACING)) {
+    Column(Modifier.padding(bottom = 26.dp)) {
+        SectionHeader(
+            title = shelf.title,
+            subtitle = shelf.subtitle,
+            onShowAll = onShowAll.takeIf { shelf.items.size > 4 },
+        )
+        // Row 1: Action cards (New playlist, Import YouTube playlist, Import from Spotify) in one row
+        ShelfRow(
+            contentPadding = PaddingValues(horizontal = PAGE_GUTTER),
+            horizontalArrangement = Arrangement.spacedBy(LIBRARY_GRID_SPACING),
+        ) {
+            item(key = "new_playlist") {
                 NewShelfCard(
                     icon = BitChordIcons.Plus,
                     label = stringResource(Res.string.new_playlist),
                     subtitle = stringResource(Res.string.saved_to_local),
                     onClick = onNewPlaylist,
                 )
-                if (onImportYouTubePlaylist != null) {
+            }
+            if (onImportYouTubePlaylist != null) {
+                item(key = "import_yt") {
                     NewShelfCard(
                         icon = BitChordIcons.Download,
                         label = stringResource(Res.string.import_youtube_playlist),
@@ -273,7 +281,9 @@ private fun PlaylistShelf(
                         onClick = onImportYouTubePlaylist,
                     )
                 }
-                if (onImportSpotifyPlaylist != null) {
+            }
+            if (onImportSpotifyPlaylist != null) {
+                item(key = "import_spotify") {
                     NewShelfCard(
                         icon = BitChordIcons.MusicNote,
                         label = "Import from Spotify",
@@ -282,8 +292,40 @@ private fun PlaylistShelf(
                     )
                 }
             }
-        },
-    )
+        }
+
+        // Next row: Newly added playlists displayed in a 2x2 grid
+        if (shelf.items.isNotEmpty()) {
+            Spacer(Modifier.height(16.dp))
+            val displayItems = shelf.items.take(4)
+            Column(
+                modifier = Modifier.padding(horizontal = PAGE_GUTTER),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                displayItems.chunked(2).forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(LIBRARY_GRID_SPACING),
+                    ) {
+                        for (item in rowItems) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                ShelfCard(
+                                    item = item,
+                                    onClick = { onItemClick(item) },
+                                    onLongPress = { onItemLongPress(item) },
+                                    isPinned = item.browseId != null && item.browseId in pinnedPlaylists,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+                        if (rowItems.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** A Library shelf's preview row never swipes past this many cards. */
